@@ -1,0 +1,24 @@
+{
+  "name": "node-child-process-extension",
+  "version": "0.0.1",
+  "description": "Node Module to promisify nodeJS child_process module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chtimi59/npm-scaffolding.git"
+  },
+  "keywords": [
+    "nodejs",
+    "child-process",
+    "spawn"
+  ],
+  "author": "jdorgeville@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chtimi59/npm-scaffolding/issues"
+  },
+  "homepage": "https://github.com/chtimi59/npm-scaffolding#readme"
+}

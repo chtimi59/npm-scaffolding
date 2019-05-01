@@ -1,0 +1,1 @@
+set PATH=%PATH%;"%~dp0\npm-global\node_modules\.bin"

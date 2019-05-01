@@ -1,0 +1,32 @@
+{
+  "name": "npm-twister",
+  "version": "0.0.1",
+  "description": "Twist npm to bring more customization",
+  "main": "index.js",
+  "bin": {
+    "npmt": "./npmt.js"
+  },
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chtimi59/npm-scaffolding.git"
+  },
+  "keywords": [
+    "npm",
+    "scaffold",
+    "customization"
+  ],
+  "author": "jdorgeville@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chtimi59/npm-scaffolding/issues"
+  },
+  "homepage": "https://github.com/chtimi59/npm-scaffolding#readme",
+  "dependencies": {
+    "semver": "^6.0.0",
+    "node-child-process-extension": "^0.0.1",
+    "node-fs-extension": "^0.0.1"
+  }
+}

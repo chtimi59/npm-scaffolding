@@ -1,0 +1,12 @@
+{
+  "name": "npm-global",
+  "private": true,
+  "dependencies": {
+    "dts-webpack-plugin": "*",
+    "node-child-process-extension": "*",
+    "node-fs-extension": "*",
+    "npm-twister": "*",
+    "tsconfig-reader": "*",
+    "webpack-externals-mngt": "*"
+  }
+}

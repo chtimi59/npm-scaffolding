@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es5",
+      "lib": [
+        "es2017",
+        "dom"
+      ],
+      "noImplicitAny": true,
+      "noImplicitThis": false,
+      "noUnusedLocals": true,
+      "sourceMap": true,
+      "outDir": "./tsOut/",
+      "strict": true,
+      "declaration": true,
+      "jsx": "react",
+      "moduleResolution": "node",
+      "baseUrl": ".././",
+      "paths": {
+        "@hello/*": ["src/bar/*"]
+      }
+    },
+    "include": [
+      "../src/**/*"
+    ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "dts-webpack-plugin",
+  "version": "0.0.1",
+  "description": "Webpack 4 plugin to deals with Typscript declaration files .d.ts",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chtimi59/npm-scaffolding.git"
+  },
+  "keywords": [
+    "webpack",
+    "webpack-plugin",
+    "typescript",
+    "dts",
+    "declaration"
+  ],
+  "author": "jdorgeville@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chtimi59/npm-scaffolding/issues"
+  },
+  "homepage": "https://github.com/chtimi59/npm-scaffolding#readme",
+  "dependencies": {
+    "tsconfig-reader": "^0.0.1"
+  }
+}
