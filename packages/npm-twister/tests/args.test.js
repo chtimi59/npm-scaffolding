@@ -1,7 +1,9 @@
 const lib = require('../src/args')
 
-describe('args', function () {
-    it('test', function () {
-        expect(0).toEqual(0)
+describe('npm-twister', function () {
+    describe('args', function () {
+        it('test', function () {
+            expect(0).toEqual(0)
+        })
     })
 })

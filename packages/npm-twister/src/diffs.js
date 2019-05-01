@@ -2,7 +2,7 @@
 
 /** Find what has been changed */
 function get(from, to) {
-
+    return "hi!"
 }
 
 /** Apply patches */

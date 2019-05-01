@@ -7,11 +7,15 @@ see [packages/](packages)
 
 # usefull commands
 ```
+// monorepo boot up
 npm run bootstrap
-
-// one test suite in watch mode
-npm t -- tsconfig-reader --watch
 
 // install packages in global node modules
 npm run link:global
+
+// test all
+npm t
+
+// or... one test suite in watch mode
+npm t -- tsconfig-reader --watch
 ```
