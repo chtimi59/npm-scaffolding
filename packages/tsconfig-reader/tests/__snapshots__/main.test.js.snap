@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`tsconfig-reader alias 1`] = `"<ABSOLUTE>\\\\src\\\\bar\\\\something"`;
+
+exports[`tsconfig-reader json 1`] = `
+"{
+    \\"compilerOptions\\": {
+        \\"module\\": \\"commonjs\\",
+        \\"target\\": \\"es5\\",
+        \\"lib\\": [
+            \\"es2017\\",
+            \\"dom\\"
+        ],
+        \\"noImplicitAny\\": true,
+        \\"noImplicitThis\\": false,
+        \\"noUnusedLocals\\": true,
+        \\"sourceMap\\": true,
+        \\"outDir\\": \\"<ABSOLUTE>\\\\folder\\\\tsOut\\",
+        \\"strict\\": true,
+        \\"declaration\\": true,
+        \\"jsx\\": \\"react\\",
+        \\"moduleResolution\\": \\"node\\",
+        \\"baseUrl\\": \\"<ABSOLUTE>\\",
+        \\"paths\\": {
+            \\"@hello/*\\": [
+                \\"<ABSOLUTE>\\\\src\\\\bar\\\\*\\"
+            ]
+        },
+        \\"declarationDir\\": \\"<ABSOLUTE>\\\\folder\\\\tsOut\\"
+    },
+    \\"include\\": [
+        \\"<ABSOLUTE>\\\\src\\\\**\\\\*\\"
+    ],
+    \\"tsconfig\\": {
+        \\"extends\\": \\"<ABSOLUTE>\\\\folder\\\\tsconfig.json\\",
+        \\"compilerOptions\\": {
+            \\"outDir\\": \\"<ABSOLUTE>\\\\dist\\",
+            \\"declaration\\": false,
+            \\"declarationDir\\": \\"<ABSOLUTE>\\\\dist\\"
+        }
+    }
+}"
+`;

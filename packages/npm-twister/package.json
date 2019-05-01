@@ -7,7 +7,7 @@
     "npmt": "./npmt.js"
   },
   "scripts": {
-    "test": "node test"
+    "test": "node jest"
   },
   "repository": {
     "type": "git",
@@ -25,8 +25,11 @@
   },
   "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/npm-twister#readme",
   "dependencies": {
-    "semver": "^6.0.0",
     "node-child-process-extension": "^0.0.1",
-    "node-fs-extension": "^0.0.1"
+    "node-fs-extension": "^0.0.1",
+    "semver": "^6.0.0"
+  },
+  "devDependencies": {
+    "jest": "^24.7.1"
   }
 }

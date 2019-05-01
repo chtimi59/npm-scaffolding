@@ -4,7 +4,7 @@
   "description": "Node Module to promisify nodeJS child_process module",
   "main": "index.js",
   "scripts": {
-    "test": "node test"
+    "test": "node jest"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/chtimi59/npm-scaffolding/issues"
   },
-  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/node-child-process-extension#readme"
+  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/node-child-process-extension#readme",
+  "devDependencies": {
+    "jest": "^24.7.1"
+  }
 }

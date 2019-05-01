@@ -1,6 +1,12 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap --hoist",
+    "test": "jest",
+    "link:global": "node link",
+    "link:delete": "node link delete"
+  },
   "devDependencies": {
     "lerna": "^3.13.4"
   }

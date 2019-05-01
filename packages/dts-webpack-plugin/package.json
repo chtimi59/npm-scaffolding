@@ -4,7 +4,7 @@
   "description": "Webpack 4 plugin to deals with Typscript declaration files .d.ts",
   "main": "index.js",
   "scripts": {
-    "test": "node test"
+    "test": "node jest"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,8 @@
   "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/dts-webpack-plugin#readme",
   "dependencies": {
     "tsconfig-reader": "^0.0.1"
+  },
+  "devDependencies": {
+    "jest": "^24.7.1"
   }
 }
