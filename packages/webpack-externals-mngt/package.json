@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/chtimi59/npm-scaffolding/issues"
   },
-  "homepage": "https://github.com/chtimi59/npm-scaffolding#readme",
+  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/webpack-externals-mngt#readme",
   "dependencies": {
     "tsconfig-reader": "^0.0.1"
   }
