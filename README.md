@@ -7,6 +7,9 @@ see [packages/](packages)
 
 # usefull commands
 ```
+// mainly usefull is you don't have lerna globaly installed 
+npm i
+
 // monorepo boot up
 npm run bootstrap
 
@@ -18,4 +21,7 @@ npm t
 
 // or... one test suite in watch mode
 npm t -- tsconfig-reader --watch
+
+// or... just jest directly (with npx)
+npx jest packages/npm-twister/tests/test1
 ```

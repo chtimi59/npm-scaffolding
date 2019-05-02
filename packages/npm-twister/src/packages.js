@@ -5,44 +5,33 @@ const objectBool = require('./object-bool')
 const Commands = require('./commands')
 const Dependencies = require('./Dependencies')
 
-function isFileExistSync(file) {
-    try {
-        return fs.statSync(file).isFile()
-    } catch(e) {
-        return false
-    }
-}
-
 class Packages {
+
 
     constructor(packageFile) {
         this.packageFile = path.resolve(packageFile)
         this.cwd = path.dirname(this.packageFile)
-        this.exist = isFileExistSync(this.packageFile)
+        this.exist = fs.extras.statSync(this.packageFile).isFile()
         this.original = this.exist ? require(this.packageFile) : {}
         this._load()
     }
-
     _load() {
         this.dependencies = new Dependencies(this)
         this.commands = new Commands(this)
-
-        // default built-in command (maybe overwrite)
-        this.commands.addFromPath(path.join(__dirname, '..'))
 
         const listToMerge = []
         const read = (filename, exist) => {
             const cwd = path.dirname(filename)
             const json = exist ? require(filename) : null
             this.commands.addFromPath(cwd)
-            this.commands.addFromScripts(cwd, json && json.scripts)
+            this.commands.addFromScripts(json && json.scripts)
             this.dependencies.addFromPackages(cwd, json)
             if (json) {
                 listToMerge.push(json)
                 if (json.extends) {
                     // recursive call
                     const subFile = path.resolve(path.dirname(filename), json.extends)
-                    const subExist = isFileExistSync(subFile, subExist)
+                    const subExist = fs.extras.statSync(subFile).isFile()
                     if (!subExist) console.error(`Warning: '${subFile}' do not exists`)
                     read(subFile, subExist)
                 }
@@ -60,7 +49,7 @@ class Packages {
     }
 
     async stop() {
-        const existNow = isFileExistSync(this.packageFile)
+        const existNow = fs.extras.statSync(this.packageFile).isFile()
         // has been removed
         if (!existNow) {
             this.original = {}
@@ -77,11 +66,11 @@ class Packages {
         }
         // has been changed
         if (this.exist && existNow) {
-            const current = require(this.packageFile)
+            const current = fs.extras.readJsonSync(this.packageFile)
             // reflects changes into 'this.original'
-            const added = lib.hxor(current, this.json)
-            const removed = lib.hxor(this.json, current)
-            this.original = lib.or(added, lib.remove(removed, this.original))
+            const added = objectBool.hxor(current, this.json)
+            const removed = objectBool.hxor(this.json, current)
+            this.original = objectBool.or(added, objectBool.remove(removed, this.original))
             this.exist = existNow
             this._load()
             fs.extras.writeJsonSync(this.packageFile, this.original)

@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`npm-twister test1 local script description 1`] = `"Some description about hello.js"`;

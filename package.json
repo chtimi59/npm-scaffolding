@@ -9,5 +9,11 @@
   },
   "devDependencies": {
     "lerna": "^3.13.4"
+  },
+  "jest": {
+    "watchPathIgnorePatterns": [
+      ".*test.*/node_modules",
+      ".*test.*/package.json"
+    ]
   }
 }

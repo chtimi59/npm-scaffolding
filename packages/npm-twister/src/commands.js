@@ -1,5 +1,6 @@
 'use strict'
 const fs = require('node-fs-extension')
+const childProcess = require('node-child-process-extension')
 const path = require('path')
 
 const args = require('./args')
@@ -11,14 +12,37 @@ class Commands {
         //
         // "this._dict" is a dictionnary of 
         //
-        //      <name> : {                            -- command name
-        //          description?: string              -- command description
-        //          help: async function(ctx,...argv) -- function to call if help is requested
-        //          main: async function(ctx,...argv) -- function to call to run this command
+        //      <name> : {                               -- command name
+        //          alias: string[]                      -- command name alias
+        //          description: string                  -- command description
+        //          helpFct: async function(ctx,...argv) -- function to call if help is requested        
+        //          mainFct: async function(ctx,...argv) -- function to call to run this command
         //      }
         //
         this._dict = {}
         this._alias = {}
+    }
+
+    // Add one command
+    add(name, item) {
+        // mandatory part
+        if (!name || typeof name !== 'string') throw(new Error('name should be a <string> (non-empty)'))
+        if (!item || typeof item !== 'object') throw(new Error('item should be an <object>'))
+        if (!item.mainFct || typeof item.mainFct !== 'function') throw(new Error('mainFct should be a <function>'))
+        // optional part
+        if (item.description && typeof item.description !== 'string') throw(new Error('description should be a <string>'))
+        if (item.alias && !Array.isArray(item.alias)) throw(new Error('alias should be a <string[]>'))
+        if (item.helpFct && typeof item.helpFct !== 'function') throw(new Error('helpFct should be a <function>'))
+        if (!item.helpFct && item.description) item.helpFct = () => console.log(item.description)
+        // copy and default values
+        item = {
+            description: "",
+            helpFct: () => console.log(`No specific help for '${name}' command`),
+            alias: [],
+            ...item
+        }
+        this._dict[name] = item
+        item.alias.forEach(s => this._alias[s] = name)
     }
 
     // Add commands form path
@@ -38,43 +62,48 @@ class Commands {
     // Add one command from filename (or dirname)
     addFromFilename(filename) {
         if (!filename || typeof filename !== 'string') throw(new Error('filename should be a <string> (non-empty)'))
-        const stat = fs.statSync(filename)
-        const name = stat.isFile() ? path.basename(filename, '.js') : path.basename(filename)
+        const stat = fs.statSync(filename) // throw if doesn't exist
+        const isFile = stat.isFile()
+        const name = isFile ? path.basename(filename, '.js') : path.basename(filename)
         const item = require(filename) // support filename and dirname and dirname with package.json
-        // may not be a valid command
         try {
-            this.add(name, item.main, item.description, item.help, item.alias)
+            // may throw if not be a valid command
+            this.add(name, {
+                alias: item.alias,
+                description: item.description,
+                helpFct: item.help,
+                mainFct: item.main,
+            })
         } catch(e) {
+            console.log(e)
             return e.message
         }
     }
 
     // Add commands from Package.json scripts section
-    addFromScripts(cwd, scripts) {
+    addFromScripts(scripts) {
         if (!scripts) return
-        //console.log(scripts)
-    }
-
-    // Add one command
-    add(name, mainFct, description = undefined, helpFct = undefined, alias=[]) {
-        if (!name || typeof name !== 'string') throw(new Error('name should be a <string> (non-empty)'))
-        if (!mainFct || typeof mainFct !== 'function') throw(new Error('mainFct should be a <function>'))
-        if (description && typeof description !== 'string') throw(new Error('description should be a <string>'))
-        if (helpFct && typeof helpFct !== 'function') throw(new Error('helpFct should be a <function>'))
-        if (!helpFct && description) helpFct = () => console.log(description)
-        if (!helpFct) helpFct = () => console.log(`No specific help for '${name}' command`)
-        this._dict[name] = {
-            mainFct,
-            description,
-            helpFct,
-            alias
+        for(const name in scripts) {
+            const mainFct = async function(packages, ...argv) {
+                let args = argv.join(" ")
+                if (args) args = ' -- ' + args
+                return childProcess.extras.exe(`npm run ${name}${args}`, packages.cwd)
+            }
+            this.add(name, {
+                mainFct,
+                description: "mapped to package.json scripts"
+            })
         }
-        alias.forEach(s => this._alias[s] = name)
     }
 
     // All availables commands names
     get names() {
         return [...Object.keys(this._dict), ...Object.keys(this._alias)]
+    }
+
+    // Number of registred commanda
+    get length() {
+        return this.names.length
     }
 
     // Descriptions List

@@ -21,6 +21,18 @@ async function exists(filename, type) {
 }
 
 /**
+ * same fs.statSync execpts, it wouldn't throw if path don't exists
+ * @param path A path to a file. If a URL is provided, it must use the `file:` protocol.
+ */
+function statSync(file) {
+    try {
+        return fs.statSync(file)
+    } catch(e) {
+        return new fs.Stats()
+    }
+}
+
+/**
  * mkdir - create a directory in recursive mode.
  * @param {string} dirpath 
  */
@@ -202,6 +214,7 @@ fs.extras = {
     rm,
     find,
     copy,
+    statSync,
     readJsonSync,
     writeJsonSync,
     readPackageLink
