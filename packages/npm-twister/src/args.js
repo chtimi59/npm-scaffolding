@@ -24,7 +24,7 @@ const removeHelpOption = argv => removeOptions(argv, HelpsOptions)
  */
 function arrayToDict(argv, expected=[]) {
     const remains = []
-    const options = []
+    const options = {}
     for (const arg of argv) {
         if (!arg.startsWith('-')) {
             remains.push(arg)

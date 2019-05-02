@@ -1,8 +1,7 @@
 'use strict'
 const fs = require('node-fs-extension')
 const path = require('path')
-const diffs = require('./diffs')
-const merge = require('./merge')
+const objectBool = require('./object-bool')
 const Commands = require('./commands')
 const Dependencies = require('./Dependencies')
 
@@ -53,7 +52,7 @@ class Packages {
         read(this.packageFile, this.exist)
         // merge jsons (ends by root package.json)
         listToMerge.reverse()
-        this.json = listToMerge.reduce((a, c) => merge(a, c), {})
+        this.json = listToMerge.reduce((a, c) => objectBool.or(a, c), {})
     }
     async start() {
         if (!this.exist) return
@@ -79,8 +78,10 @@ class Packages {
         // has been changed
         if (this.exist && existNow) {
             const current = require(this.packageFile)
-            const changes = diffs.get(this.json, current)
-            this.original = diffs.apply(this.original, changes)
+            // reflects changes into 'this.original'
+            const added = lib.hxor(current, this.json)
+            const removed = lib.hxor(this.json, current)
+            this.original = lib.or(added, lib.remove(removed, this.original))
             this.exist = existNow
             this._load()
             fs.extras.writeJsonSync(this.packageFile, this.original)
