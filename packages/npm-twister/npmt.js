@@ -2,14 +2,15 @@
 'use strict'
 const path = require('path')
 const childProcess = require('node-child-process-extension')
-const libs = require('./index')
 const title = path.basename(__filename, '.js')
 const npmtPkg = require(path.resolve(__dirname, 'package.json'))
-const packages = new libs.Packages('package.json')
+const packages = require('./src/packagesTree').singleton()
+const npmGetInfo = require('./src/npm').getInfo
+const args = require('./src/args')
 
 async function main(cmd, ...argv) {
     // main help ?
-    if (!cmd || cmd=='help' || libs.args.isHelp([cmd])) {
+    if (!cmd || cmd=='help' || args.isHelp([cmd])) {
         showUsage()
         return
     }
@@ -72,7 +73,7 @@ async function showUsage()
             console.log()
         }
 
-        const npm = await libs.npm.getInfo();
+        const npm = await npmGetInfo()
         const npmCommands = [...npm.alias, ...npm.commands].sort()
         const npmWrappedCommands = npmCommands.filter(c => !packages.commands.names.includes(c))
         const npmUnWrappedCommands = npmCommands.filter(c => packages.commands.names.includes(c))

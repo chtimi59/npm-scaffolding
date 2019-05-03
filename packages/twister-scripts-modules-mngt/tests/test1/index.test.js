@@ -13,7 +13,7 @@ describe('npm-twister', function () {
         beforeAll(async function () {
             await fs.extras.rm(packageJson)
         })
-        it('empty', async function () {
+        /*it('empty', async function () {
             try {
                 const ret = await npmt("")
                 expect(ret).toMatchSnapshot();
@@ -21,7 +21,7 @@ describe('npm-twister', function () {
                 console.error(e)
                 throw(e)
             }
-        })
+        })*/
         /*it('local script description', async function () {
             const ret = await npmt("hello --help")
             expect(ret).toMatchSnapshot();

@@ -1,11 +1,8 @@
 {
-  "name": "npm-twister",
+  "name": "npm-twister-scripts-modules-mngt",
   "version": "0.0.1",
-  "description": "Twist npm to bring more customization",
+  "description": "Twister's scripts to brings post install operations on node_module",
   "main": "index.js",
-  "bin": {
-    "npmt": "./npmt.js"
-  },
   "scripts": {
     "test": "node jest"
   },
@@ -15,6 +12,7 @@
   },
   "keywords": [
     "npm",
+    "twister",
     "scaffold",
     "customization"
   ],
@@ -23,10 +21,11 @@
   "bugs": {
     "url": "https://github.com/chtimi59/npm-scaffolding/issues"
   },
-  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/npm-twister#readme",
+  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/npm-twister-scripts-modules-mngt#readme",
   "dependencies": {
     "node-child-process-extension": "^0.0.1",
-    "node-fs-extension": "^0.0.1"
+    "node-fs-extension": "^0.0.1",
+    "semver": "^6.0.0"
   },
   "devDependencies": {
     "jest": "^24.7.1"

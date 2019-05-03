@@ -15,8 +15,8 @@ class Commands {
         //      <name> : {                               -- command name
         //          alias: string[]                      -- command name alias
         //          description: string                  -- command description
-        //          helpFct: async function(ctx,...argv) -- function to call if help is requested        
-        //          mainFct: async function(ctx,...argv) -- function to call to run this command
+        //          helpFct: async function(...argv) -- function to call if help is requested
+        //          mainFct: async function(...argv) -- function to call to run this command
         //      }
         //
         this._dict = {}
@@ -26,22 +26,18 @@ class Commands {
     // Add one command
     add(name, item) {
         // mandatory part
-        if (!name || typeof name !== 'string') throw(new Error('name should be a <string> (non-empty)'))
-        if (!item || typeof item !== 'object') throw(new Error('item should be an <object>'))
-        if (!item.mainFct || typeof item.mainFct !== 'function') throw(new Error('mainFct should be a <function>'))
+        if (!name || typeof name !== 'string') throw(new Error(`'name' should be a <string> (non-empty)`))
+        if (!item || typeof item !== 'object') throw(new Error(`'item' should be an <object>`))
+        if (!item.mainFct || typeof item.mainFct !== 'function') throw(new Error(`'main' should be a <function>`))
         // optional part
-        if (item.description && typeof item.description !== 'string') throw(new Error('description should be a <string>'))
-        if (item.alias && !Array.isArray(item.alias)) throw(new Error('alias should be a <string[]>'))
-        if (item.helpFct && typeof item.helpFct !== 'function') throw(new Error('helpFct should be a <function>'))
+        if (item.description && typeof item.description !== 'string') throw(new Error(`'description' should be a <string>`))
+        if (item.alias && !Array.isArray(item.alias)) throw(new Error(`'alias' should be a <string[]>`))
+        if (item.helpFct && typeof item.helpFct !== 'function') throw(new Error(`'help' should be a <function>`))
         if (!item.helpFct && item.description) item.helpFct = () => console.log(item.description)
-        // copy and default values
-        item = {
-            description: "",
-            helpFct: () => console.log(`No specific help for '${name}' command`),
-            alias: [],
-            ...item
-        }
-        this._dict[name] = item
+        if (!item.description) item.description = ""
+        if (!item.helpFct) item.helpFct = () => console.log(`No specific help for '${name}' command`)
+        if (!item.alias) item.alias = []
+        this._dict[name] = {...item}
         item.alias.forEach(s => this._alias[s] = name)
     }
 
@@ -61,11 +57,26 @@ class Commands {
 
     // Add one command from filename (or dirname)
     addFromFilename(filename) {
-        if (!filename || typeof filename !== 'string') throw(new Error('filename should be a <string> (non-empty)'))
+        if (!filename || typeof filename !== 'string') throw(new Error(`'filename' should be a <string> (non-empty)`))
         const stat = fs.statSync(filename) // throw if doesn't exist
-        const isFile = stat.isFile()
-        const name = isFile ? path.basename(filename, '.js') : path.basename(filename)
-        const item = require(filename) // support filename and dirname and dirname with package.json
+        let name = null
+        let item = null
+        if (stat.isFile()) {
+            // filter out non js files
+            const regex = path.sep === '/' ? /([^\/]+)\.js$/i : /([^\\]+)\.js$/i
+            const match = filename.match(regex)
+            if (!match) return
+            name = match[1]
+            item = this._safeRequire(filename)
+            if (!item) console.error(`Error in '${filename}': invalid javascript file`)
+        }
+        if (stat.isDirectory()) {
+            name = path.basename(filename)
+            item = this._safeRequire(filename)
+            /* silently failed if folder */
+        }
+        if (item === null) return
+
         try {
             // may throw if not be a valid command
             this.add(name, {
@@ -75,7 +86,7 @@ class Commands {
                 mainFct: item.main,
             })
         } catch(e) {
-            console.log(e)
+            console.error(`Error in '${filename}': ${e.message}`)
             return e.message
         }
     }
@@ -83,16 +94,25 @@ class Commands {
     // Add commands from Package.json scripts section
     addFromScripts(scripts) {
         if (!scripts) return
+        const ctx = this
         for(const name in scripts) {
-            const mainFct = async function(packages, ...argv) {
+            const mainFct = async function(...argv) {
                 let args = argv.join(" ")
                 if (args) args = ' -- ' + args
-                return childProcess.extras.exe(`npm run ${name}${args}`, packages.cwd)
+                return childProcess.extras.exe(`npm run ${name}${args}`, ctx.packages.dirname)
             }
             this.add(name, {
                 mainFct,
                 description: "mapped to package.json scripts"
             })
+        }
+    }
+    
+    _safeRequire(file) {
+        try {
+            return require(file)
+        } catch(e) {
+            return null
         }
     }
 
@@ -121,6 +141,7 @@ class Commands {
     async run(name, argv) {
         let obj = this._dict[name]
         if (!obj) {
+            // not found, is it an alias ?
             if (this._alias[name]) name = this._alias[name]
             obj = this._dict[name]
         }
@@ -128,7 +149,7 @@ class Commands {
         const method = args.isHelp(argv) ? obj.helpFct : obj.mainFct
         if (!method) throw(`invalid command : '${name}'`)
         argv = args.removeHelpOption(argv)
-        return method(this.packages, ...argv)
+        return method(...argv)
     }
 }
 

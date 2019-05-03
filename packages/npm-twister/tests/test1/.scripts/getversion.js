@@ -1,6 +1,7 @@
 'use strict'
+const twister = require('../../../index')
 module.exports = {main, alias: ['h']}
 
-async function main(packages, ...argv) {
-    console.log(packages.json.version)
+async function main(...argv) {
+    console.log(twister.packages.root.json.version)
 }
