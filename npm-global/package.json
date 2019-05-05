@@ -6,6 +6,7 @@
     "node-child-process-extension": "*",
     "node-fs-extension": "*",
     "npm-twister": "*",
+    "twister-scripts-modules-mngt": "*",
     "tsconfig-reader": "*",
     "webpack-externals-mngt": "*"
   }
