@@ -22,13 +22,13 @@ describe('npm-twister', function () {
                 throw(e)
             }
         })
-        /*it('local script description', async function () {
+        it('local script description', async function () {
             const ret = await npmt("hello --help")
             expect(ret).toMatchSnapshot();
         })
         it('run local script', async function () {
             const ret = await npmt("hello")
-            expect(ret.toUpperCase()).toEqual(__dirname.toUpperCase())
+            expect(ret.toUpperCase()).toEqual(packageJson.toUpperCase())
         })
         it('run npm init command', async function () {
             await npmt("init -y")
@@ -40,6 +40,6 @@ describe('npm-twister', function () {
             await npmt("version major")
             const ret = await npmt("getversion")
             expect(ret).toEqual("2.0.0")
-        }, 10000)*/
+        }, 10000)
     })
 })

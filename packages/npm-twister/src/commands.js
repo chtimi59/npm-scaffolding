@@ -67,13 +67,20 @@ class Commands {
             const match = filename.match(regex)
             if (!match) return
             name = match[1]
-            item = this._safeRequire(filename)
-            if (!item) console.error(`Error in '${filename}': invalid javascript file`)
+            try {
+                item = require(filename)
+            } catch(e) {
+                console.error(`Error in '${filename}': invalid javascript file`)
+                console.error(e)
+            }
         }
         if (stat.isDirectory()) {
             name = path.basename(filename)
-            item = this._safeRequire(filename)
-            /* silently failed if folder */
+            try {
+                item = require(filename)
+            } catch(e) {
+                /* silently failed if folder */
+            }
         }
         if (item === null) return
 
@@ -105,14 +112,6 @@ class Commands {
                 mainFct,
                 description: "mapped to package.json scripts"
             })
-        }
-    }
-    
-    _safeRequire(file) {
-        try {
-            return require(file)
-        } catch(e) {
-            return null
         }
     }
 

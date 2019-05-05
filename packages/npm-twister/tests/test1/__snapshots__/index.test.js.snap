@@ -1,3 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`npm-twister test1 empty 1`] = `
+"Usage:  npmt <command>
+
+wrapped commands from npm (v6.4.1):
+
+    available:
+    access, add, add-user, adduser, audit, author, bin, bugs, c, cache
+    ci, completion, config, create, ddp, dedupe, deprecate, dist-tag, dist-tags, docs
+    doctor, edit, explore, find, find-dupes, get, help, help-search, home, hook
+    i, info, init, innit, install, isntall, issues, it, la, link
+    list, ll, ln, login, logout, ls, outdated, owner, pack, ping
+    prefix, profile, prune, publish, r, rb, rebuild, remove, repo, restart
+    rm, root, rum, run, run-script, s, se, search, set, show
+    shrinkwrap, star, stars, start, stop, t, team, test, token, tst
+    udpate, un, uninstall, unlink, unpublish, unstar, up, update, upgrade, urn
+    v, version, view, whoami
+
+
+where:
+
+    getversion  alias: h
+
+    hello       Some description about hello.js
+                alias: h
+
+Specific help example:
+
+    npmt install --help
+
+version: 0.0.1"
+`;
+
 exports[`npm-twister test1 local script description 1`] = `"Some description about hello.js"`;

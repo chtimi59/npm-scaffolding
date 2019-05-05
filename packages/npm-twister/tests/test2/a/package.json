@@ -1,0 +1,8 @@
+{
+  "extends": ["b/stuff.json" , "c.js"],
+  "name": "a-name",
+  "description": "a-description",
+  "scripts": {
+    "a": "echo \"Hello A\""
+  }
+}

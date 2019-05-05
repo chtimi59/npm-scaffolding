@@ -41,6 +41,11 @@ async function getInfo() {
     return { commands, alias, version }
 }
 
+async function run(cmd, ...argv) {
+    await childProcess.extras.exe(`npm ${cmd} ${argv.join(' ')}`)
+}
+
 module.exports = {
-    getInfo
+    getInfo,
+    run
 }

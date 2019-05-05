@@ -1,0 +1,21 @@
+{
+    "name": "b-name",
+    "description": "b-description",
+    "scripts": {
+      "b": "echo \"Hello B\""
+    },
+    "list": [
+        {
+          "un": 1,
+          "deux": 1
+        },
+        {
+          "uno": 1,
+          "duos": 2
+        },
+        {
+          "ein": 1,
+          "zwei": 2
+        }
+    ]
+}

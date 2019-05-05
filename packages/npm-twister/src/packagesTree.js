@@ -30,9 +30,10 @@ class PackagesTree {
     }
 
     _load() {
-        this.json = {}
-        this.commands = new Commands(this)
-        this._tree = []
+        this.json = {} // flat (merged version) of packages.json
+        this._tree = [] // Array<{filename, children[], json}> tree of original packages.json 
+        this.commands = new Commands(this) // List of found commands
+        this.commandsPathSet = new Set() // ...to avoid re-entrance
         this._add(this.dirname)
     }
 
@@ -56,9 +57,25 @@ class PackagesTree {
         tree.push(item)
 
         // merge jsons
-        this.json = objectBool.or(this.json, item.json)
+        this.json = objectBool.or(item.json, this.json)
+        if (this.json.extends) delete this.json.extends
         // add potential commands laying in current direction
-        this.commands.addFromPath(cwd)
+        if (!this.commandsPathSet.has(cwd)) {
+            // ------------
+            // Note:
+            // This 'commandsPathSet' allows to avoid multiple call to require() 
+            // on the same file/path (require() is acutally hidden inside addFromPath())
+            //
+            // That's say, natively require() already do that !
+            // which would make this code completly useless.
+            // 
+            // However if some errors occurs during require()
+            // this is no more true. So in order to keep error logs readable
+            // we actually still need this re-entrance check
+            // ------------
+            this.commandsPathSet.add(cwd)
+            this.commands.addFromPath(cwd)
+        }
         // add potential commands coming from package.json scripts
         this.commands.addFromScripts(item.json && item.json.scripts)
     }
@@ -66,7 +83,7 @@ class PackagesTree {
     get root() { return this._tree[0] }
 
     async start() {
-         if (this.root.json) fs.extras.writeJsonSync(this.root.filename, this.root.json)
+         if (this.root.json) fs.extras.writeJsonSync(this.root.filename, this.json)
     }
 
     async stop() {

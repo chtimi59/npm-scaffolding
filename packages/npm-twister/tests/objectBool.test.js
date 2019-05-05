@@ -1,3 +1,4 @@
+const path = require('path')
 const lib = require('../src/object-bool')
 
 describe('npm-twister', function () {
@@ -117,7 +118,7 @@ describe('npm-twister', function () {
         })
 
         //test
-        it.only('test', function () {
+        it('test', function () {
             const from = { list: { a:'^0.0.1', b:'^0.0.1', c: '^0.0.1' }}
             const to = { list: { a:'5.0.1', b:'^0.0.1', d: '^0.0.1' }}
 

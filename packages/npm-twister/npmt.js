@@ -5,7 +5,7 @@ const childProcess = require('node-child-process-extension')
 const title = path.basename(__filename, '.js')
 const npmtPkg = require(path.resolve(__dirname, 'package.json'))
 const packages = require('./src/packagesTree').singleton()
-const npmGetInfo = require('./src/npm').getInfo
+const npm = require('./src/npm')
 const args = require('./src/args')
 
 async function main(cmd, ...argv) {
@@ -15,13 +15,13 @@ async function main(cmd, ...argv) {
         return
     }
     // run command
-    await packages.start() // ---------
+    await packages.start()
     let lastError = null
     try {
         if (packages.commands.names.includes(cmd)) {
             await packages.commands.run(cmd, argv)
         } else {
-            await childProcess.extras.exe(`npm ${cmd} ${argv.join(' ')}`)
+            await npm.run(cmd, argv)
         } 
     } catch(e) {
         lastError = e
@@ -44,8 +44,30 @@ async function showUsage()
 
     console.log(`Usage:  ${title} <command>`)
     console.log()
-    console.log(`version: ${npmtPkg.version}`)
-    console.log()
+
+    if (PRINT_NPM_CMDS) {
+        process.stdout.write("wrapped commands from npm");
+
+        const printNpmMethods = (title, arr) => {
+            if (arr.length <= 0) return
+            console.log(`    ${title}`)
+            for(let i = 0; i<arr.length; i+=10) {
+                console.log(`    ${arr.slice(i, i+10).join(', ')}`)
+            }
+            console.log()
+        }
+
+        const info = await npm.getInfo()
+        const npmCommands = [...info.alias, ...info.commands].sort()
+        const npmWrappedCommands = npmCommands.filter(c => !packages.commands.names.includes(c))
+        const npmUnWrappedCommands = npmCommands.filter(c => packages.commands.names.includes(c))
+        
+        console.log(` (v${info.version}):`)
+        console.log()
+        printNpmMethods('available:', npmWrappedCommands)
+        printNpmMethods('override:', npmUnWrappedCommands)
+        console.log()
+    }
     
     if (PRINT_TWST_CMDS && packages.commands.length) {
         console.log(`where:`)
@@ -59,30 +81,6 @@ async function showUsage()
         console.log(strArr.join('\n\n'))
         console.log()
     }
-    
-    if (PRINT_NPM_CMDS) {
-        console.log(`wrapped commands from npm:`)
-        console.log()
-
-        const printNpmMethods = (title, arr) => {
-            if (arr.length <= 0) return
-            console.log(`    ${title}`)
-            for(let i = 0; i<arr.length; i+=10) {
-                console.log(`    ${arr.slice(i, i+10).join(', ')}`)
-            }
-            console.log()
-        }
-
-        const npm = await npmGetInfo()
-        const npmCommands = [...npm.alias, ...npm.commands].sort()
-        const npmWrappedCommands = npmCommands.filter(c => !packages.commands.names.includes(c))
-        const npmUnWrappedCommands = npmCommands.filter(c => packages.commands.names.includes(c))
-        
-        printNpmMethods('available:', npmWrappedCommands)
-        printNpmMethods('override:', npmUnWrappedCommands)
-        console.log(`    version: ${npm.version}`)
-        console.log()
-    }
 
     if (PRINT_HELP_EXAMPLE) {
         console.log(`Specific help example:`)
@@ -90,6 +88,9 @@ async function showUsage()
         console.log(`    ${title} install --help`)
         console.log()
     }
+
+    console.log(`version: ${npmtPkg.version}`)
+    console.log()
 }
 
 main(...process.argv.slice(2))
