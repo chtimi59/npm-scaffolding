@@ -16,8 +16,9 @@ const Sections = [
 class Dependencies {
 
     constructor(packages) {
-        this.packages = packages
-        this.nodemodulePath = path.resolve(this.packages.cwd, "node_modules")
+        this._list = []
+        this.addFromPackages(packages.root)
+        this.nodemodulePath = path.resolve(path.dirname(packages.root.filename), "node_modules")
         //
         // this._list is an array of 
         //
@@ -28,23 +29,26 @@ class Dependencies {
         //              op?, arg? -- if it's an operation
         //      }
         //
-        this._list = []
+        
     }
 
     // Add Dependencies from packageJson object
-    addFromPackages(cwd, packageJson = null) {
-        if (!packageJson) return
-        const sections = Sections.filter(section => packageJson[section])
+    addFromPackages(packages) {
+        if (packages.json === null) return
+        const cwd = path.resolve(path.dirname(packages.filename))
+        const sections = Sections.filter(section => packages.json[section])
         sections.forEach(section => {
-            for (const [name, value] of Object.entries(packageJson[section])) {
+            for (const [name, value] of Object.entries(packages.json[section])) {
                 this.add(cwd, section, name, value)
             }
         })
+        for(const p of packages.children) {
+            this.addFromPackages(p)
+        }
     }
 
     // Add a Dependency
     add(cwd, section, name, value) {
-
         if (!cwd || typeof cwd !== 'string') throw(new Error('cwd should be a <string> (non-empty)'))
         if (!name || typeof name !== 'string') throw(new Error('name should be a <string> (non-empty)'))
         if (!value || typeof value !== 'string') throw(new Error('value should be a <string> (non-empty)'))

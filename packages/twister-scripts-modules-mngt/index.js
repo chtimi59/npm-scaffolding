@@ -1,2 +1,2 @@
-const install = require('src/install')
+const install = require('./src/install')
 module.exports = install
