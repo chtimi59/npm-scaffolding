@@ -52,7 +52,7 @@ module.exports = class {
       // on emit
       compiler.hooks.emit.tapAsync(PluginName, (compilation, callback) => {
         try {
-
+          
           DeclarationFile.tsconfig = this.tsconfig
           
           // ex: F:\dev\myproject\dist\
@@ -102,7 +102,7 @@ module.exports = class {
           // Copy Typescript generated declaration files
           if (compilation.options.entry) {
             // Get .ts entries
-            let tsentries = Object.values(compilation.options.entry)
+            let tsentries = (typeof compilation.options.entry === 'string') ? [compilation.options.entry] : Object.values(compilation.options.entry)
             // make nested entries flat
             tsentries = tsentries.reduce((a, i) => {
               Array.isArray(i) ? a = a.concat(i) : a.push(i)
@@ -112,8 +112,10 @@ module.exports = class {
             tsentries = tsentries.map(s => s.replace(/(\?.*)$/, ""))
             // only keep ts files
             tsentries = tsentries.filter(s => /.ts$/.test(s))
+            // resolution
+            tsentries = tsentries.map(v => path.resolve(v))
             // search common root directory
-            const commonEntryBase = Object.values(tsentries).reduce((a,i) => pathEx.commonAncestor(a, path.dirname(i)), null)
+            const commonEntryBase = tsentries.reduce((a,i) => pathEx.commonAncestor(a, path.dirname(i)), null)
             // For each wepback entries, a set of declaration files would be generated
             for (const entry of compilation.entries) {
                 // filter out non ts entries
