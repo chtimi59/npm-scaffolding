@@ -12,39 +12,39 @@ const nodeModules = path.resolve(__dirname, 'node_modules')
 describe('twister-scripts-modules-mngt', function () {
     describe('test1', function () {
         beforeAll(async function () {
+            await fs.extras.rm(nodeModules)
             await fs.extras.writeJsonSync(packageJson, {
                 "extends": "a/alt.js",
                 "name": "mgnt-test1",
                 "version": "1.0.0"
             })
-            await fs.extras.rm(nodeModules)
-            await fs.extras.mkdir(path.resolve(nodeModules, "foo"))
-            await fs.promises.writeFile(path.resolve(nodeModules, "foo", "index.js"), "")
-            await fs.extras.mkdir(path.resolve(nodeModules, "bar"))
-            await fs.promises.writeFile(path.resolve(nodeModules, "bar", "index.js"), "")
         })
-        it('empty', async function () {
-            try {
-                const ret = await npmt("")
-                expect(ret).toMatchSnapshot();
-            } catch(e) {
-                console.error(e)
-                throw(e)
-            }
+        it('hello chalk', async function () {
+            await npmt("hello chalk")
         })
         it('install', async function () {
             await npmt("hello")
-            const t1 = await fs.extras.exists(path.resolve(nodeModules, "bar"), "folder")
-            expect(t1).toEqual(false)
-            const t2 = fs.readFileSync(path.resolve(nodeModules, "new-foo", "index.js")).toString()
-            expect(t2).toEqual("console.log('new foo')")
-            const t3 = fs.readFileSync(path.resolve(nodeModules, "old-foo", "index.js")).toString()
-            expect(t3).toEqual("")
-            const t4 = fs.readFileSync(path.resolve(nodeModules, "src-foo", "index.js")).toString()
-            expect(t4).toEqual("console.log('new foo')")
-            const t5 = fs.readFileSync(path.resolve(nodeModules, "moment", "README.md")).toString()
-            const t6 = fs.readFileSync(path.resolve(nodeModules, "moment-2", "README.md")).toString()
-            expect(t5).toEqual(t6)
+            // "color-name": "rm"
+            expect(await fs.extras.exists(path.resolve(nodeModules, "color-name"), "folder"))
+                .toEqual(false)
+            // "chalk-bis": "rename chalk",
+            expect(await fs.extras.exists(path.resolve(nodeModules, "chalk"), "folder"))
+                .toEqual(false)
+            expect(await fs.extras.exists(path.resolve(nodeModules, "chalk-bis"), "folder"))
+                .toEqual(true)
+            // "new-foo": "cp ./foo",
+            expect(fs.readFileSync(path.resolve(nodeModules, "new-foo", "index.js")).toString())
+                .toEqual("console.log('new foo')")
+            // "src-foo": "symlink ./foo",
+            expect(fs.readFileSync(path.resolve(nodeModules, "src-foo", "index.js")).toString())
+                .toEqual("console.log('new foo')")
+            // "color-convert-2": "symlink ../node_modules/color-convert"
+            expect(await fs.extras.exists(path.resolve(nodeModules, "color-convert-2"), "folder"))
+                .toEqual(true)
+        })
+        it('re-install', async function () {
+            const ret = await npmt("hello")
+            expect(ret).toEqual("")
         })
     })
 })

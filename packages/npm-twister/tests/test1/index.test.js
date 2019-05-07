@@ -16,7 +16,7 @@ describe('npm-twister', function () {
         it('empty', async function () {
             try {
                 const ret = await npmt("")
-                expect(ret).toMatchSnapshot();
+                expect(ret).toMatchSnapshot()
             } catch(e) {
                 console.error(e)
                 throw(e)
@@ -24,7 +24,7 @@ describe('npm-twister', function () {
         })
         it('local script description', async function () {
             const ret = await npmt("hello --help")
-            expect(ret).toMatchSnapshot();
+            expect(ret).toMatchSnapshot()
         })
         it('run local script', async function () {
             const ret = await npmt("hello")

@@ -93,7 +93,7 @@ class Dependencies {
             try {
                 await Operations[item.op].run(obj)
             } catch(e) {
-                console.error(`error: operationDependencies[${item.name}] failed`)
+                console.error(`error: operationDependencies[${item.name}], command '${item.op}' failed`)
                 console.error(obj)
                 console.error()
                 console.error(e)
