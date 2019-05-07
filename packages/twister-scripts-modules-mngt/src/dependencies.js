@@ -117,10 +117,6 @@ class Dependencies {
             if (m.section === 'optionalDependencies') {
                 return out
             }
-            if (m.semver) {
-                out.add(m.name)
-                return out
-            }
             if (m.op !== 'rm') {
                 out.add(m.name)
                 return out

@@ -23,6 +23,9 @@ const Operations = {
         run: async function(obj) {
             const target = path.resolve(obj.nodemodulePath, obj.moduleName)
             const from = path.resolve(obj.nodemodulePath, obj.arguments[0])
+            const t1 = await fs.extras.exists(from, 'folder')
+            const t2 = await fs.extras.exists(target, 'folder')
+            if (t2 && !t1) return // we may assume that this operation has been done
             return fs.promises.rename(from, target)
         }
     },
