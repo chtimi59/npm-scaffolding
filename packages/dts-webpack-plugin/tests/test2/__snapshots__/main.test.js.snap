@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`dts-webpack-plugin test2 1`] = `
+"
+export declare var SOMETHING: string
+
+export declare function bar(v: string): string;
+"
+`;

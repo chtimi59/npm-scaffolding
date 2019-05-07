@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es5",
+      "lib": [
+        "es2017"
+      ],
+      "outDir": "./tsTmp/",
+      "declaration": true,
+      "moduleResolution": "node",
+      "baseUrl": "./",
+      "paths": {
+        "@stuff/*": ["src/stuff/*"]
+      }
+    },
+    "include": [
+      "src/**/*"
+    ]
+}

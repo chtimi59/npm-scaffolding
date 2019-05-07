@@ -86,7 +86,8 @@ module.exports = class {
 
           // Copy Extras declaration files
           for (const include of this.options.extraIncludes) {
-              const absolute = path.join(path.resolve(include.base), include.relativePath)
+              const base = path.resolve(include.base)
+              const absolute = path.join(base, include.relativePath)
               if (!fs.existsSync(absolute)) throw new Error(`${PluginName}: file do not exists '${absolute}`)
               // Should be a declarations files
               const files = pathEx.walkSync(absolute).filter(f => DeclarationReg.test(f))
@@ -94,7 +95,7 @@ module.exports = class {
                 // load declaration file
                 const dts = new DeclarationFile({file})
                 // add this new asset
-                const relative = file.substring(include.base.length)
+                const relative = file.substring(base.length)
                 dtsAssets[relative] = dts
               })
           }
