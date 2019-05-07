@@ -50,7 +50,7 @@ async function mkdir(dirpath) {
  * Find a files or folders
  * @param {string} base 
  * @param {function | string | RegExp} [filter]
- * @param {{files: boolean, folders: boolean, depth: number}} [options]
+ * @param {{files: boolean, folders: boolean, followSymbolicLinks: boolean, depth: number}} [options]
  */
 async function find(base, filter, options) {
     // private arguments (for recursive call)
@@ -59,7 +59,7 @@ async function find(base, filter, options) {
     const abs = item ? path.resolve(base, item) : path.resolve(base)
     let stat
     try {
-        stat = await fs.promises.stat(abs)
+        stat = await fs.promises.lstat(abs)
     } catch(e) {
         return [] // do not exists
     }
@@ -77,6 +77,7 @@ async function find(base, filter, options) {
     options = {
         files: true,
         folders: true,
+        followSymbolicLinks: true,
         depth: Infinity,
         ...options
     }
@@ -116,7 +117,13 @@ async function find(base, filter, options) {
     } while(0)
     
     let out = []
-    
+    if (stat.isSymbolicLink()) {
+        if (options.followSymbolicLinks) {
+            stat = await fs.promises.stat(abs) // without symblinks
+        } else {
+            out.push(abs)
+        }
+    }
     if (stat.isFile()) {
         if (options.files && test(item, stat)) out.push(abs)
     }
@@ -129,7 +136,6 @@ async function find(base, filter, options) {
             }
         }
     }
-    
     return out
 }
 
@@ -140,7 +146,7 @@ async function find(base, filter, options) {
  */
 async function rm(base, filter) {
     const wait = ms => new Promise(r => setTimeout(r, ms))
-    const list = await find(base, filter)
+    const list = await find(base, filter, { followSymbolicLinks: false })
     list.reverse()
     for(const absPath of list) {
         const stat = await fs.promises.stat(absPath)
@@ -208,6 +214,31 @@ async function readPackageLink(packageName) {
     return fs.readlinkSync(filename)
 }
 
+/**
+ * Create a symlink 'junction'
+ * @param src A path to the source file (also nammed target of symblink).
+ * @param dest A path to a new symlink file to create.
+ * @param flags An optional integer that specifies the behavior of the symlink operation. The only
+ * supported flag is `fs.constants.COPYFILE_EXCL`, which causes the symlink operation to fail if
+ * `dest` already exists and don't already pointed to the right target.
+ */
+async function symlink(src, dest, flags) {
+    const doNotReplace = (flags||0) & fs.constants.COPYFILE_EXCL
+    if (await exists(dest)) {
+        try {
+            const src2 = fs.readlinkSync(dest)
+            if (!doNotReplace && 
+                path.resolve(src).toUpperCase() === path.resolve(src2).toUpperCase())
+            {
+                return // symblink already pointed to the right place
+            }
+        } catch(e) {}
+        if (doNotReplace) throw(new Error(`'${dest}' already exist`))
+        await rm(dest)
+    }
+    return fs.promises.symlink(src, dest, 'junction')
+}
+
 fs.extras = {
     exists,
     mkdir,
@@ -217,7 +248,8 @@ fs.extras = {
     statSync,
     readJsonSync,
     writeJsonSync,
-    readPackageLink
+    readPackageLink,
+    symlink
 }
 
 module.exports = fs

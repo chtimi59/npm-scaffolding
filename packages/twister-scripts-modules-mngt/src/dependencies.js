@@ -1,5 +1,5 @@
 'use strict'
-const fs = require('node-fs-extension')
+const fs = require('fs')
 const path = require('path')
 const semver = require('semver')
 
@@ -39,7 +39,8 @@ class Dependencies {
         const sections = Sections.filter(section => packages.json[section])
         sections.forEach(section => {
             for (const [name, value] of Object.entries(packages.json[section])) {
-                this.add(cwd, section, name, value)
+                const error = this.add(cwd, section, name, value)
+                if (error) console.error(error)
             }
         })
         for(const p of packages.children) {
@@ -72,7 +73,8 @@ class Dependencies {
             if (!Operations[op].test(arg)) {
                 return `Invalid or missing argument '${op} ${arg}'`
             }
-            this._list.push({cwd, name, section, semver: '*', op, arg})
+            const arrArgs = arg.split(' ').filter(v => !!v)
+            this._list.push({cwd, name, section, semver: '*', op, arg: arrArgs})
             return
         }
         return `unknown value <type> for '${name}' package`
@@ -82,8 +84,21 @@ class Dependencies {
     async doOperations() {
         const list = this._list.filter(o => o.section === 'operationDependencies')
         for(const item of list) {
-            const target = path.resolve(this.nodemodulePath, item.name)
-            await Operations[item.op].run(item.cwd, target, list.arg)
+            const obj = {
+                nodemodulePath: this.nodemodulePath,
+                currentDirPath: item.cwd,
+                moduleName: item.name,
+                arguments: item.arg
+            }
+            try {
+                await Operations[item.op].run(obj)
+            } catch(e) {
+                console.error(`error: operationDependencies[${item.name}] failed`)
+                console.error(obj)
+                console.error()
+                console.error(e)
+                console.error()
+            }
         }
     }
 
@@ -107,6 +122,14 @@ class Dependencies {
                 return out
             }
             if (m.op !== 'rm') {
+                out.add(m.name)
+                return out
+            }
+            if (m.op !== 'cp') {
+                out.add(m.name)
+                return out
+            }
+            if (m.op !== 'symblink') {
                 out.add(m.name)
                 return out
             }
