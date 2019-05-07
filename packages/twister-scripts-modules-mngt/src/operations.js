@@ -23,10 +23,10 @@ const Operations = {
         run: async function(obj) {
             const target = path.resolve(obj.nodemodulePath, obj.moduleName)
             const from = path.resolve(obj.nodemodulePath, obj.arguments[0])
-            return fs.extras.rename(from, target)
+            return fs.promises.rename(from, target)
         }
     },
-    'symblink': {
+    'symlink': {
         test:arg => /(.+)/.test(arg),
         run: async function(obj) {
             const target = path.resolve(obj.nodemodulePath, obj.moduleName)

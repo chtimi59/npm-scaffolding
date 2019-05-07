@@ -119,7 +119,7 @@ async function find(base, filter, options) {
     let out = []
     if (stat.isSymbolicLink()) {
         if (options.followSymbolicLinks) {
-            stat = await fs.promises.stat(abs) // without symblinks
+            stat = await fs.promises.stat(abs) // without symlinks
         } else {
             out.push(abs)
         }
@@ -216,7 +216,7 @@ async function readPackageLink(packageName) {
 
 /**
  * Create a symlink 'junction'
- * @param src A path to the source file (also nammed target of symblink).
+ * @param src A path to the source file (also nammed target of symlink).
  * @param dest A path to a new symlink file to create.
  * @param flags An optional integer that specifies the behavior of the symlink operation. The only
  * supported flag is `fs.constants.COPYFILE_EXCL`, which causes the symlink operation to fail if
@@ -230,7 +230,7 @@ async function symlink(src, dest, flags) {
             if (!doNotReplace && 
                 path.resolve(src).toUpperCase() === path.resolve(src2).toUpperCase())
             {
-                return // symblink already pointed to the right place
+                return // symlink already pointed to the right place
             }
         } catch(e) {}
         if (doNotReplace) throw(new Error(`'${dest}' already exist`))

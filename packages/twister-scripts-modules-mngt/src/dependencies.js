@@ -125,14 +125,6 @@ class Dependencies {
                 out.add(m.name)
                 return out
             }
-            if (m.op !== 'cp') {
-                out.add(m.name)
-                return out
-            }
-            if (m.op !== 'symblink') {
-                out.add(m.name)
-                return out
-            }
             return out
         }, new Set()))
     }
@@ -144,10 +136,8 @@ class Dependencies {
                 out.add(m.name)
                 return out
             }
-            if (m.op === 'mv') {
-                const from = path.resolve(m.cwd, m.arg)
-                const name = path.relative(this.nodemodulePath, from)
-                if (!name.includes(path.sep)) out.add(name)
+            if (m.op === 'rename') {
+                out.add(m.arg[0])
                 return out
             }
             return out

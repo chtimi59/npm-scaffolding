@@ -8,10 +8,10 @@ module.exports = {
     /* rename node module 'foo' to 'old-foo' */
     "old-foo": "rename foo",
     /* copy local foo to mode_module 'foo' */
-    "foo": "cp ./foo",
-    /* create a symblink of local foo */
-    "foo-src": "symblink ./foo",
-    /* create a symblink of something in node_modules */
-    "moment-2": "symblink ../node_modules/moment"
+    "new-foo": "cp ./foo",
+    /* create a symlink of local foo */
+    "src-foo": "symlink ./foo",
+    /* create a symlink of something in node_modules */
+    "moment-2": "symlink ../node_modules/moment"
   }
 }
