@@ -1,7 +1,6 @@
 'use strict'
 const fs = require('fs')
 const path = require('path')
-const exeToStdOut = require('node-child-process-extension').extras.exeToStdOut
 
 /**
  * Tests whether a given filename exists or not
@@ -202,19 +201,6 @@ function writeJsonSync(filename, obj) {
 }
 
 /**
- * returns the symbolic link of a package name, defined globally
- * typical case: npm link
- * @param {string} packageName
- */
-async function readPackageLink(packageName) {
-    // get global node_modules
-    const globalPrefix = await exeToStdOut(null, `npm prefix -g`)
-    const filename = path.join(globalPrefix, 'node_modules', packageName)
-    // read Symbolic link
-    return fs.readlinkSync(filename)
-}
-
-/**
  * Create a symlink 'junction'
  * @param src A path to the source file (also nammed target of symlink).
  * @param dest A path to a new symlink file to create.
@@ -248,7 +234,6 @@ fs.extras = {
     statSync,
     readJsonSync,
     writeJsonSync,
-    readPackageLink,
     symlink
 }
 
