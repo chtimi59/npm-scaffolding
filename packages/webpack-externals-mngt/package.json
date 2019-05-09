@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/webpack-externals-mngt#readme",
   "dependencies": {
-    "tsconfig-reader": "^0.0.1"
+    "tsconfig-reader": "^0.0.1",
+    "node-fs-extension": "^0.0.1"
   }
 }

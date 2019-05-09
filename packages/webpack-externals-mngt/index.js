@@ -1,6 +1,6 @@
 'use strict'
 const path = require('path')
-const fs = require('fs')
+const fs = require('node-fs-extension')
 const tsconfigReader = require('tsconfig-reader')
 
 // original inspiration "npm i webpack-node-externals"
@@ -51,6 +51,7 @@ const lib = {
 class Manager {
 
     resolve(f) { return path.resolve(this.options.rootDir, f) }
+    relative(f) { return f.replace(this.options.rootDir, '.') }
 
     constructor(options) {
         this.options = {
@@ -69,6 +70,7 @@ class Manager {
         this.options.rootDir = path.resolve(this.options.rootDir)
         
         // optional tsconfig.json
+        if (this.options.tsconfigPath) this.options.tsconfigPath = this.resolve(this.options.tsconfigPath)
         if (this.options.tsconfigPath) this.tsconfig = new tsconfigReader(this.options.tsconfigPath)
 
         // Format options
@@ -77,11 +79,12 @@ class Manager {
             const test = typeof(i.test) === 'string' ? this.resolve(i.test) : i.test
             return {...i, test}
         })
-        if (this.options.summaryFile) this.options.summaryFile = `${this.options.summaryFile}.md`
         
         // Log stuff
         if (this.options.summaryFile)
         {
+            this.options.summaryFile = this.resolve(`${this.options.summaryFile}.md`)
+
             // Make a copy of options for log
             let optionsLog = {...this.options}
             optionsLog.rules = optionsLog.rules.map(i => {
@@ -94,6 +97,8 @@ class Manager {
                 target = typeof(i.target) === 'function' ? `QTRIM(${i.target.name || "function"}())` : target
                 return {test, target}
             })
+            if (optionsLog.summaryFile) optionsLog.summaryFile = this.relative(optionsLog.summaryFile)
+            if (optionsLog.tsconfigPath) optionsLog.tsconfigPath = this.relative(optionsLog.tsconfigPath)
             optionsLog = JSON.stringify(optionsLog, null, 4)
             optionsLog = optionsLog.replace(/\"QTRIM\((.*)\)\"/g, "$1")
             optionsLog = optionsLog.replace(/\\\\/g,"\\")
@@ -116,7 +121,7 @@ class Manager {
     // Call by webpack on each modules
     onModuleEvent(webpackContext, webpackRequest, callback) {
 
-        const filename = this.getAbsolutePath(webpackContext, webpackRequest)
+        const filename = this.requireResolve(webpackContext, webpackRequest)
         const context = {
              // Manager options used
             options: this.options,
@@ -148,9 +153,9 @@ class Manager {
         // log
         if (this.options.summaryFile) {
             const target = context.target ? context.target : "-"
-            const filename = request.isBuiltIn ? `*${request.filename}*` : request.filename.replace(this.options.rootDir, ".")
+            const filename = request.isBuiltIn ? `*${request.filename}*` : this.relative(request.filename)
             //https://emojipedia.org/
-            const msg = `| ${isExternal ? '⛔': '✔️'} | ${target} | ${webpackContext} | ${filename} |\n`
+            const msg = `| ${isExternal ? '⛔': '✔️'} | ${target} | ${this.relative(webpackContext)} | ${filename} |\n`
             fs.appendFileSync(this.options.summaryFile, msg)
         }
 
@@ -163,34 +168,38 @@ class Manager {
     }
 
     // Return absolute path or null if the path can't be resolved
-    getAbsolutePath(ctx, req) {
-        //webpackContext, webpackRequest
-        let output = null
-        // if req starts by ".", "/" or "Letter:\", then we may assume that's a filename
-        console.log(ctx, req)
-        const isFilename = /^([\.\/])|^([a-zA-Z]\:\\)/.test(req)
-        if (isFilename) {
-            output = /^\./.test(req) ? path.join(ctx, req) : req
-        } else {
-            // request, is a module name
-            const rootDirs = [ctx, this.resolve("node_modules")]
-            const rootDir = rootDirs.find(f => {
-                const test = path.join(f, req)
-                if (fs.existsSync(test)) return true
-                if (fs.existsSync(`${test}.js`)) return true
-                return false
-            })
-            // module Path
-            if (!rootDir) {
-                // typescript may define some alias
-                if (this.tsconfig) output = this.tsconfig.alias(req)
+    requireResolve(ctx, req) {
+        // try to mimic require.resolve(req, {paths: modulePaths})
+        // excepts:
+        //  1- don't use GLOBAL_FOLDERS
+        //  2- don't returns the actual .js file (if req refer to a folder)
+        //  3- return null if not found (instead of throwing an exception)
+
+        // Search paths (like module.paths without GLOBAL_FOLDERS
+        let modulePaths = ctx.split(path.sep).reduce((acc, folderSection, idx) => {
+            if (idx > 0) {
+                acc.push(path.join(acc[idx-1], folderSection))
             } else {
-                output = path.join(rootDir, req)
+                acc.push(`${folderSection}${path.sep}`)
+            }
+            return acc
+        }, [])
+        modulePaths = modulePaths.map(f => path.resolve(f, "node_modules"))
+        // local path (without 'node_modules')
+        modulePaths.push(ctx)
+        // reverse to make sure that first item is the 'clothest' path (like module.paths)
+        modulePaths.reverse()
+        // find first existed module
+        for(const base of modulePaths) {
+            const test = path.join(base, req)
+            const jsFile = test.toUpperCase().endsWith('.JS') ? test : `${test}.js`
+            if (fs.extras.existsSync(jsFile, 'file')) return test
+            if (fs.extras.existsSync(test, 'folder')) {
+                if (fs.extras.existsSync(path.join(test, 'index.js'), 'file')) return test
+                if (fs.extras.existsSync(path.join(test, 'package.json'), 'file')) return test
             }
         }
-        // Make sure that the absolute path is fully resolved
-        if (!output) return null
-        return this.resolve(output)
+        return null
     }
     
     test(context, request) {

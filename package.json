@@ -4,6 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap --hoist",
     "test": "jest",
+    "clean": "lerna clean --yes && git clean -fdX",
     "link:global": "node link",
     "link:delete": "node link delete"
   },

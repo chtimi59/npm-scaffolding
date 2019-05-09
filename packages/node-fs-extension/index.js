@@ -20,7 +20,20 @@ async function exists(filename, type) {
 }
 
 /**
- * same fs.statSync execpts, it wouldn't throw if path don't exists
+ * Tests whether a given filename exists or not
+ * @param {string | Buffer | URL } filename 
+ * @param {'folder' | 'file' | 'any'} [type] default is 'any'
+ */
+function existsSync(filename, type) {
+    const stat = statSync(filename)
+    if (!type || type === 'any') return stat.isDirectory() || stat.isFile()
+    if (type === 'folder') return stat.isDirectory()
+    if (type === 'file') return stat.isFile()
+    throw(new Error(new TypeError(`Type '${type}' unknown`)))
+}
+
+/**
+ * same fs.statSync excepts, it wouldn't throw if path don't exists
  * @param path A path to a file. If a URL is provided, it must use the `file:` protocol.
  */
 function statSync(file) {
@@ -227,6 +240,7 @@ async function symlink(src, dest, flags) {
 
 fs.extras = {
     exists,
+    existsSync,
     mkdir,
     rm,
     find,

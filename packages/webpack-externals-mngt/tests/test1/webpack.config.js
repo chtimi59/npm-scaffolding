@@ -6,10 +6,10 @@ module.exports = {
     externals: [
         new ExternalsMngt.Manager({
             summaryFile: './dist/bundle',
-            /*rules: [{ 
+            rules: [{ 
                 test: ExternalsMngt.is.builtIn("fs"),
                 target: ExternalsMngt.lib.root()
-            }]*/
+            }]
         })
     ]
 }
