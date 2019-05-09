@@ -1,8 +1,12 @@
-const baz = require('./lib/baz')
+const a = require('./a')
+const b = require('./b')
+const c = require('./c/foo')
 const url = require('url')
-const fs = require('fs')
+//const fs = require('fs')
 
 export function bar() {
-    const t = baz.fct('ok')
-    console.log(t, url, fs)
+    console.log(a)
+    console.log(b)
+    console.log(c)
+    console.log(url)
 }

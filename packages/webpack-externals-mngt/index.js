@@ -8,7 +8,6 @@ const tsconfigReader = require('tsconfig-reader')
 /*
 
 context: {
-    rootDir: string // root directory (i.e. where package.jon sit)
     options: object // Manager options used
     ruleIndex: number // Current rule index in options.rules[]
     target: string // Current target applied (set by previous rules)
@@ -24,13 +23,24 @@ request: {
 */
 
 const is = {
-    builtIn: () => (context, request) => request.isBuiltIn,
-    nodeModule: moduleName => (context, request) => request.isBuiltIn ? false : request.filename.startsWith(path.resolve(path.join(context.rootDir, "node_modules", moduleName))),
-    isWebpack: () => (context, request) => context.webpackContext.startsWith(path.join(context.rootDir, "node_modules", "webpack"))
+    builtIn: (name = "") => (context, request) => {
+        if (!request.isBuiltIn) return false
+        return name ? request.filename === name : true
+    },
+    nodeModule: (name = "") => (context, request) => {
+        if (request.isBuiltIn) return false
+        const base = path.resolve(context.options.rootDir, "node_modules", name)
+        return request.filename.startsWith(base)
+    },
+    isWebpack: () => (context, request) => {
+        if (request.isBuiltIn) return false
+        const base = path.resolve(context.options.rootDir, "node_modules", "webpack")
+        context.webpackContext.startsWith(base)
+    }
 }
 
 const lib = {
-    root: (name) => (context, request) => context.target = name ? name : path.basename(request.filename),
+    root: (name) => (context, request) => context.target = `${name ? name : path.basename(request.filename)}`,
     commonjs: (name) => (context, request) => context.target = `commonjs ${name ? name : request.webpackRequest}`,
     commonjs2: (name) => (context, request) => context.target = `commonjs2 ${name ? name : request.webpackRequest}`,
     amd: (name) => (context, request) => context.target = `amd ${name ? name : request.webpackRequest}`,
@@ -40,15 +50,15 @@ const lib = {
 
 class Manager {
 
-    resolve(f) { return path.resolve(path.join(this.rootDir, f)) }
+    resolve(f) { return path.resolve(this.options.rootDir, f) }
 
     constructor(options) {
         this.options = {
             /* externals rules */
             rules: [],
-            /** Path of 'package.json' */
-            packageJsonPath: "./package.json",
-            /** path of 'tsconfig.json' */
+            /** Root Directory (where is './node_modules/') */
+            rootDir: ".",
+            /** Path to 'tsconfig.json' (used to known alias) */
             tsconfigPath: null,
             /** log file (without extension) */
             summaryFile: null,
@@ -56,10 +66,7 @@ class Manager {
             ...options
         }
         // Get rootDir
-        this.options.packageJsonPath = path.resolve(this.options.packageJsonPath)
-        if (!fs.existsSync(this.options.packageJsonPath)) throw(new Error(`package.json not found ('${this.options.packageJsonPath}')`))
-        this.rootDir = path.dirname(this.options.packageJsonPath)
-        this.nodeModulesDir = this.resolve("node_modules")
+        this.options.rootDir = path.resolve(this.options.rootDir)
         
         // optional tsconfig.json
         if (this.options.tsconfigPath) this.tsconfig = new tsconfigReader(this.options.tsconfigPath)
@@ -111,8 +118,6 @@ class Manager {
 
         const filename = this.getAbsolutePath(webpackContext, webpackRequest)
         const context = {
-            // root directory (i.e. where package.jon sit)
-            rootDir: this.rootDir,
              // Manager options used
             options: this.options,
             // Current rule index in options.rules[]
@@ -143,7 +148,7 @@ class Manager {
         // log
         if (this.options.summaryFile) {
             const target = context.target ? context.target : "-"
-            const filename = request.isBuiltIn ? `*${request.filename}*` : request.filename.replace(this.rootDir, ".")
+            const filename = request.isBuiltIn ? `*${request.filename}*` : request.filename.replace(this.options.rootDir, ".")
             //https://emojipedia.org/
             const msg = `| ${isExternal ? '⛔': '✔️'} | ${target} | ${webpackContext} | ${filename} |\n`
             fs.appendFileSync(this.options.summaryFile, msg)
@@ -157,16 +162,18 @@ class Manager {
         }
     }
 
-    // Return absolute path or null if the path can't be reolved
-    getAbsolutePath(cwd, req) {
+    // Return absolute path or null if the path can't be resolved
+    getAbsolutePath(ctx, req) {
+        //webpackContext, webpackRequest
         let output = null
         // if req starts by ".", "/" or "Letter:\", then we may assume that's a filename
+        console.log(ctx, req)
         const isFilename = /^([\.\/])|^([a-zA-Z]\:\\)/.test(req)
         if (isFilename) {
-            output = /^\./.test(req) ? path.join(cwd, req) : req
+            output = /^\./.test(req) ? path.join(ctx, req) : req
         } else {
             // request, is a module name
-            const rootDirs = [cwd, this.nodeModulesDir]
+            const rootDirs = [ctx, this.resolve("node_modules")]
             const rootDir = rootDirs.find(f => {
                 const test = path.join(f, req)
                 if (fs.existsSync(test)) return true
@@ -183,7 +190,7 @@ class Manager {
         }
         // Make sure that the absolute path is fully resolved
         if (!output) return null
-        return path.resolve(output)
+        return this.resolve(output)
     }
     
     test(context, request) {

@@ -18,8 +18,5 @@
   "bugs": {
     "url": "https://github.com/chtimi59/npm-scaffolding/issues"
   },
-  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/tsconfig-reader#readme",
-  "devDependencies": {
-    "jest": "^24.7.1"
-  }
+  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/tsconfig-reader#readme"
 }

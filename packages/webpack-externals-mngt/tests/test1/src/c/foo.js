@@ -1,5 +1,5 @@
 function fct(v) {
-    return `zz${v}zz`
+    return `c:${v}`
 }
 
 module.exports = {

@@ -15,33 +15,39 @@ externals: [
         rules: [
             /* Examples */
             { 
-                // builtin (such as 'fs') becomes
-                // <root> library (such as "fs" => "fs")
-                test: ExternalsMngt.is.builtIn,
+                // all builtin (such as 'fs') becomes
+                // <root> library ("fs" => "fs")
+                test: ExternalsMngt.is.builtIn(),
                 target: ExternalsMngt.lib.root()
             },
             { 
                 // this specific builtin (path) becomes
                 // <root> library ("path" => "myPath")
-                test: "path",
-                target: "myPath" // or ExternalsMngt.lib.root("myPath")
-            },
-            { 
-                // Node module witch starts with "dev." becomes
-                // commonjs library
-                test: /node_modules\/dev.*/),
-                target: ExternalsMngt.lib.commonjs()
+                test: ExternalsMngt.is.builtIn("path") 
+                target: ExternalsMngt.lib.root("myPath")
             },
             {
                 // this specific node modules (moment) becomes
                 // commonjs library ( => "commonjs myMoment")
                 test: ExternalsMngt.is.nodeModule("moment"),
                 target: ExternalsMngt.lib.commonjs("myMoment")
+            },
+            { 
+                // Node module witch starts with "dev." becomes
+                // commonjs library
+                test: /node_modules\/dev.*/),
+                target: ExternalsMngt.lib.commonjs()
             }
         ],
+        
         /* optionals */
-        packageJsonPath: './package.json', // default value './package.json'
-        summaryFile: 'bundle.log', // default value null
+
+        /** Root Directory (where './node_modules/' is) */
+        rootDir: ".", // default
+        /** Path to 'tsconfig.json' (used to know alias) */
+        tsconfigPath: "./tsconfig.json", // default null
+        /** log file (without extension), if defined it will be a .md markdown file*/
+        summaryFile: './dist/bundle', // default value null
      }
 ]
 ```
@@ -56,7 +62,7 @@ For each modules, all rules are tested/applied (from first to last)
 Hence you may define general cases at the really beginning, and then, in the lastest rules, you may defines some specifics situations
 
 ## Rule's test
-The test is applied on requested module **filename**, which should be the absolute path of the actual module
+The test is applied on requested module **filename**, which should be the absolute path (based on rootDir) of the actual module
 
 >
 > ⚠️note⚠️:
@@ -69,13 +75,12 @@ The test is applied on requested module **filename**, which should be the absolu
 >
 
 The test can be
-- a string: It will returns true if there is an exact match
-- a regex
+- a string: It will returns true if there is an exact match with requested module **filename** (absolute based on rootDir)
+- a regex: same as string but with regex instead of exact match
 - a function(context, request), where
 
 ```ts
      context: {
-         rootDir: string // root directory (i.e. where package.json sit)
          options: object // Manager options used
          ruleIndex: number // Current rule index in options.rules[]
          target: string // Current target applied (set by previous rules)
@@ -93,10 +98,10 @@ Examples
 const isBuiltIn(context, request) => request.isBuiltIn
 
 // return true, if webpack request is a specific node_modules package (moduleName)
-function isNodeModule(moduleName) {
+function isNodeModule(moduleName = "") {
     return function(context, request) {
-        const base = path.resolve(path.join(context.rootDir, "node_modules", moduleName))
         if (request.isBuiltIn) return false
+        const base = path.resolve(context.options.rootDir, "node_modules", moduleName)
         return request.filename.startWith(base)
     }
 }
