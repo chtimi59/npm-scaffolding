@@ -1,19 +1,16 @@
 # npm-scaffolding
-Mono repo
-
+Mono repo, see [packages/](packages)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
-
-see [packages/](packages)
 
 # usefull commands
 ```
-// mainly usefull is you don't have lerna globaly installed 
+// mainly usefull if you don't have lerna globaly installed 
 npm i
 
 // monorepo boot up
 npm run bootstrap
 
-// install packages in global node modules
+// install all /packages in global node modules
 npm run link:global
 
 // test all
