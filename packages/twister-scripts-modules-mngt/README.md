@@ -1,3 +1,2 @@
 # twister-scripts-modules-mngt
-Twister's scripts to brings post install operations on node_module
-
+A Twister (or `npmt` for short) scripts to overide `npm install` and offer more flexibility on node_modules/ installation

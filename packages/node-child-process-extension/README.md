@@ -1,16 +1,13 @@
 # node-child-process-extension
-Node Module to promisify nodeJS child_process module
+Node Module to extends nodeJS 'child_process'
 
-## Examples
 ```js
-const childProcess = require('node-child-process-extension')
-
-// regular 'child-process' methods are preserved
-childProcess.spawn("ls", "-l", {stdio: [0, 1, 2], shell: true})
-
-// Extensions cames as 'extras'
-await childProcess.extras.exe("ls -l")
-console.log(await childProcess.extras.exeToStdOut("ls -l"))
+const childProcess = require('child_process')
+childProcess.extras = {
+    exe,
+    exeToStdOut
+}
+module.exports = childProcess
 ```
 
 ## 'extras' API
@@ -28,4 +25,17 @@ async function exe(command, cwd) {}
  * @param {{} | string} [options] Regular spawn options or Current working directory
  */
 async function exeToStdOut(command, cwd) {}
+```
+
+
+## Examples
+```js
+const childProcess = require('node-child-process-extension')
+
+// regular 'child-process' methods are preserved
+childProcess.spawn("ls", "-l", {stdio: [0, 1, 2], shell: true})
+
+// Extensions cames as 'extras'
+await childProcess.extras.exe("ls -l")
+console.log(await childProcess.extras.exeToStdOut("ls -l"))
 ```

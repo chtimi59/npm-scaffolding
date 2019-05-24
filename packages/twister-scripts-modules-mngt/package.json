@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/chtimi59/npm-scaffolding/issues"
   },
-  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/npm-twister-scripts-modules-mngt#readme",
+  "homepage": "https://github.com/chtimi59/npm-scaffolding/tree/master/packages/npm-twister-scripts-modules-mngt#readme",
   "dependencies": {
     "node-child-process-extension": "^0.0.1",
     "node-fs-extension": "^0.0.1",

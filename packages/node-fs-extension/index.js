@@ -120,7 +120,6 @@ async function find(base, filter, options) {
         }
         if (filter instanceof RegExp) {
             test = function(file, stat) {
-                console.log(file)
                 return file ? filter.test(file) : false
             }
             break

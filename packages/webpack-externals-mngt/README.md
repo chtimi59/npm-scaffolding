@@ -1,11 +1,15 @@
 # Webpack Externals Manager
-Extends the original webpack 4 externals
+Extends the original webpack 4 externals management, to deals with what should be bundled or not.
+
+![image](docs/example.png)
 
 ## Prerequist
 You need to know, how [Webpack treats externals](https://webpack.js.org/configuration/externals/) treats natively *externals*
 
 ## Brief
 This modules extends original webpack *externals*, with a list of rules for fine tune management
+
+# Webpack External Managment
 
 Example of webpack config:
 
@@ -14,13 +18,13 @@ externals: [
     new ExternalsMngt.Manager({
         rules: [
             /* Examples */
-            { 
+            {
                 // all builtin (such as 'fs') becomes
                 // <root> library ("fs" => "fs")
                 test: ExternalsMngt.is.builtIn(),
                 target: ExternalsMngt.lib.root()
             },
-            { 
+            {
                 // this specific builtin (path) becomes
                 // <root> library ("path" => "myPath")
                 test: ExternalsMngt.is.builtIn("path") 
@@ -32,7 +36,7 @@ externals: [
                 test: ExternalsMngt.is.nodeModule("moment"),
                 target: ExternalsMngt.lib.commonjs("myMoment")
             },
-            { 
+            {
                 // Node module witch starts with "dev." becomes
                 // commonjs library
                 test: /node_modules\/dev.*/),

@@ -1,5 +1,5 @@
 # tsconfig.reader
-Node Module to read tsconfig.json
+Node Module to properly read tsconfig.json
 
 ## Brief
 - Combine `extends` into a single

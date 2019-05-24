@@ -1,19 +1,21 @@
 # node-fs-extension
-Node Module to extends nodeJS fs
+Node Module to extends nodeJS 'fs'
 
-## Examples
 ```js
-const fs = require('node-fs-extension')
-
-// regular 'fs' is preserved
-await fs.writeFileSync("./src/test.txt", "Hello world")
-
-// extensions cames as 'extras'
-await fs.extras.mkdir("./foo/bar/baz")
-await fs.extras.rm("./foo")
-await fs.extras.copy("./src", "./dest", fsEx.constants.COPYFILE_EXCL)
-await fs.extras.rm("./dest", "*.txt")
-console.log(await fs.extras.find("./node_modules/micromatch/", "*.js")))
+const fs = require('fs')
+fs.extras = {
+    exists,
+    existsSync,
+    mkdir,
+    rm,
+    find,
+    copy,
+    statSync,
+    readJsonSync,
+    writeJsonSync,
+    symlink
+}
+module.exports = fs
 ```
 
 ## 'extras' API
@@ -24,6 +26,19 @@ console.log(await fs.extras.find("./node_modules/micromatch/", "*.js")))
  * @param {'folder' | 'file' | 'any'} [type] default is 'any'
  */
 async function exists(path, type) {}
+
+/**
+ * Tests whether a given filename exists or not
+ * @param {string | Buffer | URL } filename 
+ * @param {'folder' | 'file' | 'any'} [type] default is 'any'
+ */
+function existsSync(filename, type) {}
+
+/**
+ * same fs.statSync excepts, it wouldn't throw if path don't exists
+ * @param path A path to a file. If a URL is provided, it must use the `file:` protocol.
+ */
+function statSync(file) {}
 
 /**
  * mkdir - create a directory in recursive mode.
@@ -71,11 +86,14 @@ function readJsonSync(filename) {}
 function writeJsonSync(filename, obj) {}
 
 /**
- * returns the symbolic link of a package name, defined globally
- * typical case: npm link
- * @param {string} packageName
+ * Create a symlink 'junction'
+ * @param src A path to the source file (also nammed target of symlink).
+ * @param dest A path to a new symlink file to create.
+ * @param flags An optional integer that specifies the behavior of the symlink operation. The only
+ * supported flag is `fs.constants.COPYFILE_EXCL`, which causes the symlink operation to fail if
+ * `dest` already exists and don't already pointed to the right target.
  */
-async function readPackageLink(packageName) {}
+async function symlink(src, dest, flags) {}
 ```
 
 ### "find" specifics examples:
@@ -105,3 +123,19 @@ console.log(await fs.extras.find("./node_modules/micromatch/", "./node_modules/m
 // note: base part ('./node_modules/micromatch/') is not used by the regular expression test
 console.log(await fs.extras.find("./node_modules/micromatch/", /i/, {folders: false}))
 ```
+
+## Examples
+```js
+const fs = require('node-fs-extension')
+
+// regular 'fs' is preserved
+await fs.writeFileSync("./src/test.txt", "Hello world")
+
+// extensions cames as 'extras'
+await fs.extras.mkdir("./foo/bar/baz")
+await fs.extras.rm("./foo")
+await fs.extras.copy("./src", "./dest", fsEx.constants.COPYFILE_EXCL)
+await fs.extras.rm("./dest", "*.txt")
+console.log(await fs.extras.find("./node_modules/micromatch/", "*.js")))
+```
+

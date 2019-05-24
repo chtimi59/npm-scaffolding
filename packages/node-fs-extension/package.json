@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/chtimi59/npm-scaffolding/issues"
   },
-  "homepage": "https://github.com/chtimi59/npm-scaffolding/packages/node-fs-extension#readme",
+  "homepage": "https://github.com/chtimi59/npm-scaffolding/tree/master/packages/node-fs-extension#readme",
   "dependencies": {
     "node-child-process-extension": "^0.0.1"
   }
