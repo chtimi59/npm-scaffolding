@@ -1,5 +1,8 @@
 # npm-scaffolding
+[![CircleCI](https://circleci.com/gh/chtimi59/npm-scaffolding.svg?style=svg)](https://circleci.com/gh/chtimi59/npm-scaffolding)
+
 Mono repo, see [packages/](packages)
+
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
 # usefull commands
