@@ -114,7 +114,7 @@ async function find(base, filter, options) {
                 const filterBase = stat.isFile() ? path.dirname(absolute) : absolute
                 const isAbsoluteFilter = (path.sep === '\\' ? /^[a-zA-Z]\:/ : /^\//).test(filter) || filter[0] === '.'
                 const search = isAbsoluteFilter ? path.resolve(filter) : path.join(filterBase, filter)
-                return require('node-fs-extension/node_modules/minimatch')(absolute, search)
+                return require('minimatch')(absolute, search)
             }
             break
         }

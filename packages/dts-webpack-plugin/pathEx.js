@@ -39,7 +39,7 @@ function commonAncestor(pathA, pathB) {
 }
 
 /* Get a a Relative path from a path */
-function relativePath(rootPath, pathA, allowDoubleDot = false) {
+function relativePath(rootPath, pathA, allowDoubleDot = false, debug = false) {
     // make sure there are absolute
     if (!rootPath) return path
     if (!path) return ""
@@ -47,6 +47,11 @@ function relativePath(rootPath, pathA, allowDoubleDot = false) {
     pathA = path.resolve(pathA)
     const base = commonAncestor(rootPath, pathA)
     if (base === rootPath) {
+        if (debug) {
+            console.log(`----`)
+            console.log(pathA)
+            console.log(base)
+        }
         return path.join(...split(pathA.substring(base.length)))
     } else {
         if (!allowDoubleDot) return null

@@ -69,7 +69,10 @@ module.exports = class {
           const mainAbsolute = path.resolve(webpackOutput, this.options.output)
           // ex: mytypes\types.d.ts
           const mainRelative = pathEx.relativePath(webpackOutput, mainAbsolute, false)
-          if (!mainRelative) throw new Error(`${PluginName}: invalid Bundle path '${mainAbsolute}' (should be a child of '${webpackOutput}')`)
+          if (!mainRelative) {
+            pathEx.relativePath(webpackOutput, mainAbsolute, false, true)
+            throw new Error(`${PluginName}: invalid Bundle path '${mainAbsolute}' (should be a child of '${webpackOutput}')`)
+          }
           // add this new asset
           dtsAssets[mainRelative] = new DeclarationFile()
           // add Headers in it
