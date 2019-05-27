@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`tsconfig-reader alias 1`] = `"<ABSOLUTE>\\\\src\\\\bar\\\\something"`;
+exports[`tsconfig-reader alias 1`] = `"<ABSOLUTE>/src/bar/something"`;
 
 exports[`tsconfig-reader json 1`] = `
 "{
@@ -15,7 +15,7 @@ exports[`tsconfig-reader json 1`] = `
         \\"noImplicitThis\\": false,
         \\"noUnusedLocals\\": true,
         \\"sourceMap\\": true,
-        \\"outDir\\": \\"<ABSOLUTE>\\\\folder\\\\tsOut\\",
+        \\"outDir\\": \\"<ABSOLUTE>/folder/tsOut\\",
         \\"strict\\": true,
         \\"declaration\\": true,
         \\"jsx\\": \\"react\\",
@@ -23,20 +23,20 @@ exports[`tsconfig-reader json 1`] = `
         \\"baseUrl\\": \\"<ABSOLUTE>\\",
         \\"paths\\": {
             \\"@hello/*\\": [
-                \\"<ABSOLUTE>\\\\src\\\\bar\\\\*\\"
+                \\"<ABSOLUTE>/src/bar/*\\"
             ]
         },
-        \\"declarationDir\\": \\"<ABSOLUTE>\\\\folder\\\\tsOut\\"
+        \\"declarationDir\\": \\"<ABSOLUTE>/folder/tsOut\\"
     },
     \\"include\\": [
-        \\"<ABSOLUTE>\\\\src\\\\**\\\\*\\"
+        \\"<ABSOLUTE>/src/**/*\\"
     ],
     \\"tsconfig\\": {
-        \\"extends\\": \\"<ABSOLUTE>\\\\folder\\\\tsconfig.json\\",
+        \\"extends\\": \\"<ABSOLUTE>/folder/tsconfig.json\\",
         \\"compilerOptions\\": {
-            \\"outDir\\": \\"<ABSOLUTE>\\\\dist\\",
+            \\"outDir\\": \\"<ABSOLUTE>/dist\\",
             \\"declaration\\": false,
-            \\"declarationDir\\": \\"<ABSOLUTE>\\\\dist\\"
+            \\"declarationDir\\": \\"<ABSOLUTE>/dist\\"
         }
     }
 }"

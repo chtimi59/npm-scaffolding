@@ -8,6 +8,21 @@ async function npmt(args="") {
 }
 const packageJson = path.resolve(__dirname, 'package.json')
 
+const replaceAbsPath = str => {
+    const base = __dirname.replace(/\\/g, '\\\\')
+    const regEx = new RegExp(`(.*)${base}([^\\s\\"\\']*)([^\\${path.sep}]*)`)
+    const arr = str.split('\n').map(i => {
+        const u = i.match(regEx)
+        if (!u) return i
+        const he = u[1] || ""
+        const pa = u[2] ? u[2].replace(/\\/g, '/') : ""
+        const ta = u[3]  || ""
+        return `${he}<ABSOLUTE>${pa}${ta}`
+    })
+    return arr.join('\n')
+}
+
+
 describe('npm-twister', function () {
     describe('test2', function () {
         beforeAll(async function () {
@@ -36,15 +51,15 @@ describe('npm-twister', function () {
             expect(ret).toMatchSnapshot()
         })
         it('run local script A', async function () {
-            const ret = await npmt("a 1 2 3")
+            const ret = replaceAbsPath(await npmt("a 1 2 3"))
             expect(ret).toMatchSnapshot()
         })
         it('run local script B', async function () {
-            const ret = await npmt("b 1 2 3")
+            const ret = replaceAbsPath(await npmt("b 1 2 3"))
             expect(ret).toMatchSnapshot()
         })
         it('run local script C', async function () {
-            const ret = await npmt("c 1 2 3")
+            const ret = replaceAbsPath(await npmt("c 1 2 3"))
             expect(ret).toMatchSnapshot()
         })
         it('run local script a-hello', async function () {

@@ -64,7 +64,7 @@ Some description about b-hello.js"
 exports[`npm-twister test2 run local script A 1`] = `
 "-- LOAD A ONLY ONCE --
 
-> root-name@1.0.0 a C:\\\\dev\\\\npm-scaffolding\\\\packages\\\\npm-twister\\\\tests\\\\test2
+> root-name@1.0.0 a <ABSOLUTE>
 > echo \\"Hello A\\" \\"1\\" \\"2\\" \\"3\\"
 
 \\"Hello A\\" \\"1\\" \\"2\\" \\"3\\""
@@ -73,7 +73,7 @@ exports[`npm-twister test2 run local script A 1`] = `
 exports[`npm-twister test2 run local script B 1`] = `
 "-- LOAD A ONLY ONCE --
 
-> root-name@1.0.0 b C:\\\\dev\\\\npm-scaffolding\\\\packages\\\\npm-twister\\\\tests\\\\test2
+> root-name@1.0.0 b <ABSOLUTE>
 > echo \\"Hello B\\" \\"1\\" \\"2\\" \\"3\\"
 
 \\"Hello B\\" \\"1\\" \\"2\\" \\"3\\""
@@ -82,7 +82,7 @@ exports[`npm-twister test2 run local script B 1`] = `
 exports[`npm-twister test2 run local script C 1`] = `
 "-- LOAD A ONLY ONCE --
 
-> root-name@1.0.0 c C:\\\\dev\\\\npm-scaffolding\\\\packages\\\\npm-twister\\\\tests\\\\test2
+> root-name@1.0.0 c <ABSOLUTE>
 > echo \\"Hello C\\" \\"1\\" \\"2\\" \\"3\\"
 
 \\"Hello C\\" \\"1\\" \\"2\\" \\"3\\""
