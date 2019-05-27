@@ -190,7 +190,8 @@ async function copy(src, dest, flags) {
         const s = file ? path.resolve(src, file) : src
         const d = file ? path.resolve(dest, file) : dest
         if (state.isDirectory()) await mkdir(d)
-        if (state.isFile()) await fs.promises.copyFile(s, d, flags)
+        // fs.promises.copyFileSync buggy in linux version nodeJs:10 ?
+        if (state.isFile()) await fs.copyFileSync(s, d, flags) 
     })
     if (list.length === 0) throw(new Error(`'${src}' not found`))
 }

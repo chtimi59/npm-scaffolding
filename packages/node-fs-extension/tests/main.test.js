@@ -54,23 +54,27 @@ describe('node-fs-extension', function () {
         const d = await lib.extras.find("./node_modules/jest/", {folders: false})
         expect(d.length > 5 && d.length < c.length).toEqual(true)
 
-        // 5- all those 3, are identical and returns all '.js' files
+        // 5- all those, are identical and returns all '.js' files
         const e = await lib.extras.find("./node_modules/jest/", "*.js")
-        const f = await lib.extras.find("./node_modules/jest/", "./node_modules/jest/**/*.js")
-        const g = await lib.extras.find("./node_modules/jest/", `${path.resolve("./node_modules/jest/")}\\**\\*.js`)
+        const e1 = await lib.extras.find("./node_modules/jest/", "./node_modules/jest/**/*.js")
+        const e2 = await lib.extras.find("./node_modules/jest/", `${path.resolve("./node_modules/jest/")}/**/*.js`)
+        const e3 = await lib.extras.find("./node_modules/jest/", /.js$/)
+        const e4 = await lib.extras.find("./node_modules/jest/", (file, stat) => /.js$/.test(file))
         expect(e.length > 5).toEqual(true)
-        expect(e).toEqual(f)
-        expect(e).toEqual(g)
+        expect(e1).toEqual(e)
+        expect(e2).toEqual(e)
+        expect(e3).toEqual(e)
+        expect(e4).toEqual(e)
 
-        // 6- all those 2, are identical and returns all '.js' files in a specific folder
-        const h = await lib.extras.find("./node_modules/jest/", "*.json", {depth: 0})
-        const i = await lib.extras.find("./node_modules/jest/", "./node_modules/jest/*.json")
-        expect(h.length > 1).toEqual(true)
-        expect(h).toEqual(i)
+        // 6- all those, are identical and returns all '.js' files in a specific folder
+        const f = await lib.extras.find("./node_modules/jest/", "*.json", {depth: 0})
+        const f1 = await lib.extras.find("./node_modules/jest/", "./node_modules/jest/*.json")
+        expect(f.length > 1).toEqual(true)
+        expect(f1).toEqual(f)
 
         // 7- returns all files that have "i" in their path (like 'index.js' or 'lib/parsers.js')
         // note: base part ('./node_modules/micromatch/') is not used by the regular expression test
-        const k = await lib.extras.find("./node_modules/jest/", /i/, {folders: false})
-        expect(k.length > 5).toEqual(true)
+        const g = await lib.extras.find("./node_modules/jest/", /i/, {folders: false})
+        expect(g.length > 5).toEqual(true)
     })
 })

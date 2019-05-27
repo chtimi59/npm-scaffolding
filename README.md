@@ -24,4 +24,7 @@ npm t -- tsconfig-reader --watch
 
 // or... just jest directly (with npx)
 npx jest packages/npm-twister/tests/test1
+
+// test on linux if you've a window machine
+docker run -ti -v %cd%:/mnt/app node:10 bash
 ```
