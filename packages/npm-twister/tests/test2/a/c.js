@@ -6,7 +6,7 @@ const base = {
   "from-c": "Something from c:base"
 }
 
-const foo = "echo \"Hello C\""
+const foo = "echo Hello C"
 
 module.exports = twister.merge(base, {
     "scripts": {

@@ -2,7 +2,7 @@
     "name": "b-name",
     "description": "b-description",
     "scripts": {
-      "b": "echo \"Hello B\""
+      "b": "echo Hello B"
     },
     "list": [
         {

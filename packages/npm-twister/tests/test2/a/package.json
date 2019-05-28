@@ -3,6 +3,6 @@
   "name": "a-name",
   "description": "a-description",
   "scripts": {
-    "a": "echo \"Hello A\""
+    "a": "echo Hello A"
   }
 }

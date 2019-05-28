@@ -31,7 +31,7 @@ describe('npm-twister', function () {
                 "name": "root-name",
                 "description": "root-description",
                 "scripts": {
-                  "root": "echo \"Hello\""
+                  "root": "echo Hello"
                 },
                 "license": "ISC",
                 "version": "1.0.0"

@@ -65,27 +65,27 @@ exports[`npm-twister test2 run local script A 1`] = `
 "-- LOAD A ONLY ONCE --
 
 > root-name@1.0.0 a <ABSOLUTE>
-> echo \\"Hello A\\" \\"1\\" \\"2\\" \\"3\\"
+> echo Hello A \\"1\\" \\"2\\" \\"3\\"
 
-\\"Hello A\\" \\"1\\" \\"2\\" \\"3\\""
+Hello A \\"1\\" \\"2\\" \\"3\\""
 `;
 
 exports[`npm-twister test2 run local script B 1`] = `
 "-- LOAD A ONLY ONCE --
 
 > root-name@1.0.0 b <ABSOLUTE>
-> echo \\"Hello B\\" \\"1\\" \\"2\\" \\"3\\"
+> echo Hello B \\"1\\" \\"2\\" \\"3\\"
 
-\\"Hello B\\" \\"1\\" \\"2\\" \\"3\\""
+Hello B \\"1\\" \\"2\\" \\"3\\""
 `;
 
 exports[`npm-twister test2 run local script C 1`] = `
 "-- LOAD A ONLY ONCE --
 
 > root-name@1.0.0 c <ABSOLUTE>
-> echo \\"Hello C\\" \\"1\\" \\"2\\" \\"3\\"
+> echo Hello C \\"1\\" \\"2\\" \\"3\\"
 
-\\"Hello C\\" \\"1\\" \\"2\\" \\"3\\""
+Hello C \\"1\\" \\"2\\" \\"3\\""
 `;
 
 exports[`npm-twister test2 run local script a-hello 1`] = `
@@ -93,10 +93,10 @@ exports[`npm-twister test2 run local script a-hello 1`] = `
 { name: 'root-name',
   description: 'root-description',
   scripts:
-   { b: 'echo \\"Hello B\\"',
-     c: 'echo \\"Hello C\\"',
-     a: 'echo \\"Hello A\\"',
-     root: 'echo \\"Hello\\"' },
+   { b: 'echo Hello B',
+     c: 'echo Hello C',
+     a: 'echo Hello A',
+     root: 'echo Hello' },
   list:
    [ { un: 1, deux: 1 }, { uno: 1, duos: 2 }, { ein: 1, zwei: 2 } ],
   'from-c': 'Something from c:base',
@@ -110,10 +110,10 @@ exports[`npm-twister test2 run local script b-hello 1`] = `
 { name: 'root-name',
   description: 'root-description',
   scripts:
-   { b: 'echo \\"Hello B\\"',
-     c: 'echo \\"Hello C\\"',
-     a: 'echo \\"Hello A\\"',
-     root: 'echo \\"Hello\\"' },
+   { b: 'echo Hello B',
+     c: 'echo Hello C',
+     a: 'echo Hello A',
+     root: 'echo Hello' },
   list: [ { un: 1, deux: 1 }, { uno: 1, duos: 2, tres: 3 }, null ],
   'from-c': 'Something from c:base',
   license: 'ISC',
