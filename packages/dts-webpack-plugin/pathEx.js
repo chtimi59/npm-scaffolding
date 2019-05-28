@@ -4,6 +4,7 @@ const fs = require('fs')
 
 module.exports = {
     split,
+    join,
     commonAncestor,
     relativePath,
     walkSync,
@@ -13,13 +14,29 @@ module.exports = {
 /* Split a path into an array */
 function split(p) {
     if (!p) return []
-    const arr = p.split(path.sep)
+    if (typeof(p) !== 'string') throw(new Error(`string expected, get '${typeof(p)}'`))
+    const arr = path.normalize(p).split(path.sep)
     if (arr.length === 0) return [];
-    return arr.map(i => i.trim()).filter(i => !!i)
+    return arr
+}
+
+/* Join an array into a string */
+function join(arr, debug = false) {
+    if (debug) {
+        console.log("!!!", arr)
+    }
+    if (!arr) return undefined
+    if (!Array.isArray(arr)) throw(new Error("array expected"))
+    const str = path.join(...arr)
+    if (debug) {
+        console.log("??", str)
+    }
+    if (arr[0] === '' && path.sep === '/') return `/${str}`
+    return str
 }
 
 /* Find commmon ancestor between 2 paths */
-function commonAncestor(pathA, pathB) {
+function commonAncestor(pathA, pathB, debug = false) {
     // make sure there are absolute
     if (pathA) pathA = path.resolve(pathA) 
     if (pathB) pathB = path.resolve(pathB)
@@ -34,8 +51,13 @@ function commonAncestor(pathA, pathB) {
     for (cnt = 0; cnt < max; cnt++) if (a[cnt] !== b[cnt]) break
     /* rebuild path */
     const ancestor = a.slice(0, cnt)
+    if (debug) {
+        console.log(pathA)
+        console.log(pathB)
+        console.log(join(ancestor, debug))
+    }
     if (ancestor.length < 1) return null
-    return path.join(...ancestor)
+    return join(ancestor)
 }
 
 /* Get a a Relative path from a path */
@@ -45,14 +67,16 @@ function relativePath(rootPath, pathA, allowDoubleDot = false, debug = false) {
     if (!path) return ""
     rootPath = path.resolve(rootPath) 
     pathA = path.resolve(pathA)
-    const base = commonAncestor(rootPath, pathA)
+    const base = commonAncestor(rootPath, pathA, debug)
+
+    if (debug) {
+        console.log(`----`)
+        console.log(pathA)
+        console.log(base)
+    }
+
     if (base === rootPath) {
-        if (debug) {
-            console.log(`----`)
-            console.log(pathA)
-            console.log(base)
-        }
-        return path.join(...split(pathA.substring(base.length)))
+        return join(split(pathA.substring(base.length)))
     } else {
         if (!allowDoubleDot) return null
         const len = split(base).length
@@ -60,7 +84,7 @@ function relativePath(rootPath, pathA, allowDoubleDot = false, debug = false) {
         let doubleDotCount = split(rootPath).length - len
         const out = []
         for (let i = 0; i < doubleDotCount; i++) { out.push("..") }
-        return path.join(...out.concat(a))
+        return join(out.concat(a))
     }
 }
 

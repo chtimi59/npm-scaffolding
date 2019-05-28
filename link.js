@@ -3,6 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const childProcess = require('child_process')
+const isUnix = (path.sep === '/')
 
 async function npmGetPrefix() {
     return new Promise((resolve, reject) => {
@@ -11,29 +12,16 @@ async function npmGetPrefix() {
         p.on('error', e => reject(e))
         p.on('exit', code => {
             if (code) reject({errorCode: code})
-            resolve(stdOut.trim())
+            const globalPrefix = stdOut.trim()
+            const gDirBins = isUnix ? path.resolve(globalPrefix, "bin") : globalPrefix
+            const gDirModules = isUnix ? path.resolve(globalPrefix, "lib", "node_modules") : path.resolve(globalPrefix, "node_modules")
+            resolve({gDirBins, gDirModules})
         })
         p.stdout.on('data', data => stdOut += data)
     })
 }
 
-async function makeOrDeleteBin(src, dst, deleteReq = false) {
-    console.log(`cmd link: ${dst}`)
-    const isDstExist = fs.existsSync(dst)
-    if (deleteReq && !isDstExist) return
-    if (deleteReq) {
-        fs.unlinkSync(dst)
-    } else {
-        let buff = fs.readFileSync(src).toString()
-        buff = buff.replace(/\$basedir\/\.\.\/\.\.\/\.\.\/packages\//g, '$basedir/node_modules/')
-        buff = buff.replace(/%~dp0\\\.\.\\\.\.\\\.\.\\packages\\/g, '%~dp0\\node_modules\\', '')
-        fs.writeFileSync(dst, buff)
-    }
-}
-
 async function createOrDeleteSymbLink(src, dst, deleteReq = false) {
-    console.log(`module link: ${dst}`)
-
     const isDstExist = fs.existsSync(dst)
     if (deleteReq && !isDstExist) return
 
@@ -53,7 +41,7 @@ async function createOrDeleteSymbLink(src, dst, deleteReq = false) {
     }
 
     if (!deleteReq && isDstExist) {
-        if (!isDstValid) console.error(`'invalid ${dst}`)
+        if (!isDstValid) console.error(`invalid ${dst}`)
         return
     }
 
@@ -68,21 +56,47 @@ async function createOrDeleteSymbLink(src, dst, deleteReq = false) {
     }
 }
 
+
+async function makeOrDeleteBin(src, dst, deleteReq = false) {
+    console.log(`cmd link: ${dst}`)
+    const isDstExist = fs.existsSync(dst)
+    if (deleteReq && !isDstExist) return
+    if (deleteReq) {
+        fs.unlinkSync(dst)
+    } else {
+        if (isUnix) {
+            return createOrDeleteSymbLink(src, dst, deleteReq)
+        } else {
+            // create file as windows don't support junction symlink for file
+            let buff = fs.readFileSync(src).toString()
+            buff = buff.replace(/\$basedir\/\.\.\/\.\.\/\.\.\/packages\//g, '$basedir/node_modules/')
+            buff = buff.replace(/%~dp0\\\.\.\\\.\.\\\.\.\\packages\\/g, '%~dp0\\node_modules\\', '')
+            fs.writeFileSync(dst, buff)
+        }
+    }
+}
+
+async function makeOrDeleteModule(src, dst, deleteReq = false) {
+    console.log(`module link: ${dst}`)
+    return createOrDeleteSymbLink(src, dst, deleteReq)
+}
+
 async function main(option) {
     const deleteReq = (option === 'delete') 
-    const globalPrefix = await npmGetPrefix(null, `npm prefix -g`)
-    const baseDir = path.resolve("npm-global", "node_modules")
-    const modules = await fs.readdirSync(baseDir)
+    const {gDirBins, gDirModules} = await npmGetPrefix()
+    const modulesDir = path.resolve("npm-global", "node_modules")
+    const modules = await fs.readdirSync(modulesDir)
+
     if (deleteReq) console.log(`removing:`)
     for(const m of modules) {
        if (m === '.bin') {
-            const baseDirBins = path.resolve(baseDir, m)
-            const bins = await fs.readdirSync(baseDirBins)
+            const dirBins = path.resolve(modulesDir, m)
+            const bins = await fs.readdirSync(dirBins)
             for(const x of bins) {
-                await makeOrDeleteBin(path.resolve(baseDirBins, x), path.resolve(globalPrefix, x), deleteReq)
+                await makeOrDeleteBin(path.resolve(dirBins, x), path.resolve(gDirBins, x), deleteReq)
             }
         } else {
-            await createOrDeleteSymbLink(path.resolve(baseDir, m), path.resolve(globalPrefix, "node_modules", m), deleteReq)
+            await makeOrDeleteModule(path.resolve(modulesDir, m), path.resolve(gDirModules, m), deleteReq)
         }
     }
 }
