@@ -18,10 +18,10 @@ describe('twister-scripts-modules-mngt', function () {
                 "name": "mgnt-test1",
                 "version": "1.0.0"
             })
-        })
+        }, 15000)
         it('hello chalk', async function () {
             await npmt("hello chalk")
-        })
+        }, 15000)
         it('install', async function () {
             await npmt("hello")
             // "color-name": "rm"
@@ -41,10 +41,10 @@ describe('twister-scripts-modules-mngt', function () {
             // "color-convert-2": "symlink ../node_modules/color-convert"
             expect(await fs.extras.exists(path.resolve(nodeModules, "color-convert-2"), "folder"))
                 .toEqual(true)
-        })
+        }, 15000)
         it('re-install', async function () {
             const ret = await npmt("hello")
             expect(ret).toEqual("")
-        })
+        }, 15000)
     })
 })

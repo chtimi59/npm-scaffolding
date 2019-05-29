@@ -12,5 +12,5 @@ describe('dts-webpack-plugin', function () {
         expect(t1 && t2 && t3).toEqual(true)
         const ret = fs.readFileSync(path.resolve(outDir, "types.d.ts")).toString()
         expect(ret).toMatchSnapshot()
-    })
+    }, 15000)
 })

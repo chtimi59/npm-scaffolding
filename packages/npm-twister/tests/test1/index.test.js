@@ -40,6 +40,6 @@ describe('npm-twister', function () {
             await npmt("version major")
             const ret = await npmt("getversion")
             expect(ret).toEqual("2.0.0")
-        }, 10000)
+        }, 15000)
     })
 })

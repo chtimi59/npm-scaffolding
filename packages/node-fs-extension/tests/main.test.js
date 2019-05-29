@@ -34,8 +34,10 @@ describe('node-fs-extension', function () {
     it('copy', async function () {
         await lib.extras.mkdir(".tmp/b/c/d")
         lib.extras.writeJsonSync(".tmp/b/c/d/e", {a: 1})
+        expect(lib.extras.existsSync(".tmp/b/c/d/e")).toEqual(true)
         await lib.extras.copy(".tmp/b", ".tmp/a")
-        const t = lib.extras.readJsonSync(".tmp/b/c/d/e")
+        expect(lib.extras.existsSync(".tmp/a/c/d/e")).toEqual(true)
+        const t = lib.extras.readJsonSync(".tmp/a/c/d/e")
         expect(t).toEqual({a: 1})
     })
 

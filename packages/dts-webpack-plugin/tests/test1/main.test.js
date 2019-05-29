@@ -9,5 +9,5 @@ describe('dts-webpack-plugin', function () {
         const t1 = await fs.extras.exists(path.resolve(outDir, "index.d.ts"), "file")
         const t2 = await fs.extras.exists(path.resolve(outDir, "lib", "a.d.ts"), "file")
         expect(t1 && t2).toEqual(true)
-    })
+    }, 15000)
 })

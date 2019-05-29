@@ -160,10 +160,11 @@ async function rm(base, filter) {
     const list = await find(base, filter, { followSymbolicLinks: false })
     list.reverse()
     for(const absPath of list) {
-        const stat = await fs.promises.stat(absPath)
+        const stat = await fs.promises.lstat(absPath)
         let lastError = null
         for(let retry=0; retry<5; retry++) {
             try {
+                if (stat.isSymbolicLink()) await fs.promises.unlink(absPath)
                 if (stat.isDirectory()) await fs.promises.rmdir(absPath)
                 if (stat.isFile()) await fs.promises.unlink(absPath)
                 lastError = null
@@ -186,14 +187,15 @@ async function rm(base, filter) {
  * `dest` already exists.
  */
 async function copy(src, dest, flags) {
-    const list = await find(src, async function(file, state) {
-        const s = file ? path.resolve(src, file) : src
-        const d = file ? path.resolve(dest, file) : dest
-        if (state.isDirectory()) await mkdir(d)
-        // fs.promises.copyFileSync buggy in linux version nodeJs:10 ?
-        if (state.isFile()) await fs.copyFileSync(s, d, flags) 
+    let ajob = Promise.resolve()
+    const list = await find(src, function(file, state) {
+        const s = file ? path.resolve(src, file) : path.resolve(src)
+        const d = file ? path.resolve(dest, file) : path.resolve(dest)
+        if (state.isDirectory()) ajob = ajob.then(() => mkdir(d))
+        if (state.isFile()) ajob = ajob.then(() => fs.promises.copyFile(s, d, flags))
     })
     if (list.length === 0) throw(new Error(`'${src}' not found`))
+    return ajob
 }
 
 /**

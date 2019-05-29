@@ -2,6 +2,7 @@ const path = require('path')
 const childProcess = require('node-child-process-extension')
 const fs = require('node-fs-extension')
 const nodePrefix = `node ${path.resolve(__dirname, '../../npmt.js')}`
+const isUnix = (path.sep === '/')
 async function npmt(args="") {
     cmd = `${nodePrefix} ${args}`
     return childProcess.extras.exeToStdOut(cmd, __dirname)
@@ -51,15 +52,18 @@ describe('npm-twister', function () {
             expect(ret).toMatchSnapshot()
         })
         it('run local script A', async function () {
-            const ret = replaceAbsPath(await npmt("a 1 2 3"))
+            let ret = replaceAbsPath(await npmt("a 1 2 3"))
+            if (isUnix) ret = ret.replace(/1\ 2\ 3/g, "\"1\" \"2\" \"3\"")
             expect(ret).toMatchSnapshot()
         })
         it('run local script B', async function () {
-            const ret = replaceAbsPath(await npmt("b 1 2 3"))
+            let ret = replaceAbsPath(await npmt("b 1 2 3"))
+            if (isUnix) ret = ret.replace(/1\ 2\ 3/g, "\"1\" \"2\" \"3\"")
             expect(ret).toMatchSnapshot()
         })
         it('run local script C', async function () {
-            const ret = replaceAbsPath(await npmt("c 1 2 3"))
+            let ret = replaceAbsPath(await npmt("c 1 2 3"))
+            if (isUnix) ret = ret.replace(/1\ 2\ 3/g, "\"1\" \"2\" \"3\"")
             expect(ret).toMatchSnapshot()
         })
         it('run local script a-hello', async function () {
