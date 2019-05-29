@@ -1,19 +1,26 @@
 # Webpack Externals Manager
 Extends the original webpack 4 externals management, to deals with what should be bundled or not.
 
-![image](docs/example.png)
-
-## Prerequist
-You need to know, how [Webpack treats externals](https://webpack.js.org/configuration/externals/) treats natively *externals*
+## Install
+```bash
+npm i webpack-externals-mngt -D
+```
 
 ## Brief
-This modules extends original webpack *externals*, with a list of rules for fine tune management
+This modules extends the original webpack *externals* feature, with a list of rules to allow a fine tune management.
 
-# Webpack External Managment
+example of logs output:
 
-Example of webpack config:
+![image](docs/example.png)
 
+> requiered skill: You need to understand, how [Webpack treats externals](https://webpack.js.org/configuration/externals/) treats natively *externals*
+
+# Examples
+`webpack.config.js`:
 ```js
+
+// [...]
+
 externals: [
     new ExternalsMngt.Manager({
         rules: [
@@ -54,26 +61,30 @@ externals: [
         summaryFile: './dist/bundle', // default value null
      }
 ]
+
+// [...]
+
 ```
 
-## How does it work ?
+# How does it work ?
 Each rule is composed of:
-- a **test**, which returns true if the module should be external
-- a **target**, to define how the *external* should be made
+- a **TEST**, which returns true if the module should be exclude from the bundle (*external*)
+- a **TARGET**, to define how the *external* should be used (*commonjs? root?*)
 
-For each modules, all rules are tested/applied (from first to last) 
+For each *required()* modules, all rules are tested/applied (from first to last) 
 
-Hence you may define general cases at the really beginning, and then, in the lastest rules, you may defines some specifics situations
+Hence you can define general cases at the really beginning, and then, in the lastest rules, you may defines some specifics situations
 
-## Rule's test
-The test is applied on requested module **filename**, which should be the absolute path (based on rootDir) of the actual module
+## TEST
+The test is applied on requested module **filename** (which is an absolute path based on rootDir)
 
 >
 > ⚠️note⚠️:
 >
-> If module filename can not be resolved, then, filename is set to the original webpack-request
->
-> and we may assume that's a global module (such as 'fs', 'path' and such)
+> If module filename can not be resolved as an absolute path, then, filename is set to the original webpack-request.
+> That means that the module is:
+> - a 'npm --global' module
+> - or a native module (such as 'fs', 'path' and such)
 >
 > **isBuiltIn** flag will be set to true
 >
@@ -111,8 +122,8 @@ function isNodeModule(moduleName = "") {
 }
 ```
 
-## rule's target
-Target defined how to use the external module, typically webpack 4 supports the following library:
+## TARGET
+Target defined how the external module will be used, typically webpack 4 supports the following library:
 - **commonjs**: The library should be available as a CommonJS module.
 - **commonjs2**: Similar to the above but where the export is module.exports.default.
 - **amd**: Similar to commonjs but using AMD module system.

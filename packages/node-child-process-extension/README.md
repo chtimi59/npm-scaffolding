@@ -1,6 +1,12 @@
 # node-child-process-extension
 Node Module to extends nodeJS 'child_process'
 
+## Install
+```bash
+npm i node-child-process-extension
+```
+
+## Brief
 ```js
 const childProcess = require('child_process')
 childProcess.extras = {
@@ -10,7 +16,8 @@ childProcess.extras = {
 module.exports = childProcess
 ```
 
-## 'extras' API
+# childProcess.extras
+## Process execution
 ```js
 /**
  * Execute a Shell command
@@ -18,7 +25,8 @@ module.exports = childProcess
  * @param {{} | string} [options] Regular spawn options or Current working directory
  */
 async function exe(command, cwd) {}
-
+```
+```js
 /**
  * Execute a Shell command, promise is resolved with stdout
  * @param {*} command The command to run, with space-separated arguments.
@@ -27,8 +35,7 @@ async function exe(command, cwd) {}
 async function exeToStdOut(command, cwd) {}
 ```
 
-
-## Examples
+# Examples
 ```js
 const childProcess = require('node-child-process-extension')
 

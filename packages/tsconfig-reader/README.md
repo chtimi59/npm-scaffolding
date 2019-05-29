@@ -1,12 +1,17 @@
-# tsconfig.reader
+# tsconfig-reader
 Node Module to properly read tsconfig.json
 
+## Install
+```bash
+npm i tsconfig-reader -D
+```
+
 ## Brief
-- Combine `extends` into a single
+- Combine `extends`
 - Resolve paths to get absolute paths
 - Provide alias method to resolve `compilerOptions.paths`
 
-## Example
+# Examples
 ```js
 const tsconfigReader = require('tsconfig-reader')
 const tsconfig = new tsconfigReader()

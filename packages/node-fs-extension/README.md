@@ -1,24 +1,32 @@
 # node-fs-extension
 Node Module to extends nodeJS 'fs'
 
+## Install
+```bash
+npm i node-fs-extension
+```
+
+## Brief
 ```js
 const fs = require('fs')
 fs.extras = {
     exists,
     existsSync,
+    statSync,
+    lstatSync,
     mkdir,
     rm,
-    find,
     copy,
-    statSync,
+    symlink,
+    find,
     readJsonSync,
     writeJsonSync,
-    symlink
 }
 module.exports = fs
 ```
 
-## 'extras' API
+# fs.extras
+## Files tests
 ```js
 /**
  * Tests whether a given path exists or not
@@ -26,42 +34,53 @@ module.exports = fs
  * @param {'folder' | 'file' | 'any'} [type] default is 'any'
  */
 async function exists(path, type) {}
-
+```
+```js
 /**
  * Tests whether a given filename exists or not
  * @param {string | Buffer | URL } filename 
  * @param {'folder' | 'file' | 'any'} [type] default is 'any'
  */
 function existsSync(filename, type) {}
-
+```
+```js
 /**
  * same fs.statSync excepts, it wouldn't throw if path don't exists
  * @param path A path to a file. If a URL is provided, it must use the `file:` protocol.
  */
 function statSync(file) {}
-
+```
+```js
+/**
+ * same fs.lstatSync excepts, it wouldn't throw if path don't exists
+ * @param path A path to a file. If a URL is provided, it must use the `file:` protocol.
+ */
+function lstatSync(file) {}
+```
+## Copy/Delete files
+```js
 /**
  * mkdir - create a directory in recursive mode.
  * @param {string} path 
  */
 async function mkdir(path) {}
-
-/**
- * Find a files or folders
- * 
- * @param {string} base 
- * @param {function | string | RegExp} [filter]
- * @param {{files: boolean, folders: boolean, depth: number}} [options]
- */
-async function find(base, filter, options) {}
-
+```
+```js
 /**
  * Remove recursively files or folders
- * @param {string} path 
+ * @param {string} base 
  * @param {function | string | RegExp} [filter]
+ * @example
+ *  await rm('./lib') // remove all
+ *  await rm('./lib', '*.js') // remove all js files
+ *  await rm("./lib/", /.js$/)  // remove all js files
+ *  await rm('./lib', (file, lstat) => /.js$/.test(file))
+ *  await rm('./lib', './lib/*.js') // none-recursive glob expr
+ *  await rm('./lib', '*.+(bar|foo)') // advanced glob expr
  */
 async function rm(path, filter) {}
-
+```
+```js
 /**
  * Copy recursively files or folders
  * @param src A path to the source file.
@@ -71,20 +90,8 @@ async function rm(path, filter) {}
  * `dest` already exists.
  */
 async function copy(src, dest, flags) {}
-
-/**
- * Rely on readFileSync to get js Object
- * @param filename Json path
- */
-function readJsonSync(filename) {}
-
-/**
- * Rely on writeJsonSync to write js Object
- * @param filename Json path
- * @param obj js object
- */
-function writeJsonSync(filename, obj) {}
-
+```
+```js
 /**
  * Create a symlink 'junction'
  * @param src A path to the source file (also nammed target of symlink).
@@ -95,36 +102,44 @@ function writeJsonSync(filename, obj) {}
  */
 async function symlink(src, dest, flags) {}
 ```
-
-### "find" specifics examples:
+## Find
 ```js
-const fs = require('node-fs-extension')
-
-// 1- returns [./node_modules/micromatch/README.md]
-console.log(await fs.extras.find("./node_modules/micromatch/README.md"))
-// 2- return []
-console.log(await fs.extras.find("./node_modules/micromatch/notexist"))
-
-// 3- return list of files and folders (recursive)
-console.log(await fs.extras.find("./node_modules/micromatch/"))
-// 4- return list of files (recursive)
-console.log(await fs.extras.find("./node_modules/micromatch/", {folders: false}))
-
-// 5- all those 3, are identical and returns all '.js' files
-console.log(await fs.extras.find("./node_modules/micromatch/", "*.js"))
-console.log(await fs.extras.find("./node_modules/micromatch/", "./node_modules/micromatch/**/*.js"))
-console.log(await fs.extras.find("./node_modules/micromatch/", "F:\\dev\\plasma\\Extras\\io.js\\node_modules\\micromatch\\**\\*.js"))
-
-// 6- all those 2, are identical and returns all '.js' files in a specific folder
-console.log(await fs.extras.find("./node_modules/micromatch/", "*.js", {depth: 0}))
-console.log(await fs.extras.find("./node_modules/micromatch/", "./node_modules/micromatch/*.js"))
-
-// 7- returns all files that have "i" in their path (like 'index.js' or 'lib/parsers.js')
-// note: base part ('./node_modules/micromatch/') is not used by the regular expression test
-console.log(await fs.extras.find("./node_modules/micromatch/", /i/, {folders: false}))
+/**
+ * Find a files or folders
+ * @param {string} base 
+ * @param {function | string | RegExp} [filter]
+ * @param {{files: boolean, folders: boolean, followSymbolicLinks: boolean, depth: number}} [options]
+ * @example
+ * await find("./lib/") // all contents (recursive search)
+ * await find("./lib/", {folders: false}) // all files (recursive search)
+ * await find("./lib/", {folders: false, depth: 0}) // all files (non-recursive search)
+ * await find('./lib', '*.js') // all js files
+ * await find("./lib/", /.js$/) // all js files
+ * await find('./lib', (file, lstat) => /.js$/.test(file)) // all js files
+ * await find('./lib', '*.js', {depth: 0}) // non-recursive search
+ * await find('./lib', './lib/*.js') //  non-recursive
+ * await find('./lib', '*.+(bar|foo)') // advanced glob expr
+ * await find("./lib/README.md") // ['/absolute/lib/README.md']
+ * await find("./lib/notexist") // [] 
+ */
+async function find(base, filter, options) {}
+```
+## Json
+```js
+/**
+ * Rely on readFileSync to get js Object
+ * @param filename Json path
+ */
+function readJsonSync(filename) {}
+/**
+ * Rely on writeJsonSync to write js Object
+ * @param filename Json path
+ * @param obj js object
+ */
+function writeJsonSync(filename, obj) {}
 ```
 
-## Examples
+# Examples
 ```js
 const fs = require('node-fs-extension')
 
